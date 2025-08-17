@@ -1,0 +1,760 @@
+{% extends "base.html" %}
+
+{% block title %}Career Simulator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline-container {
+        position: relative;
+        width: 100%;
+        height: 4px;
+        background-color: #d1d5db;
+        border-radius: 2px;
+    }
+    .timeline-marker {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border: 2px solid #9ca3af;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+    .timeline-marker:hover {
+        border-color: #3b82f6;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    .timeline-marker.active {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    }
+    .timeline-marker-label {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        color: #6b7280;
+        user-select: none;
+    }
+    .forecasting-icon {
+        position: absolute;
+        top: -32px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #3b82f6;
+        transition: left 0.3s ease-in-out;
+    }
+    .modal-overlay {
+        transition: opacity 0.3s ease;
+    }
+    .modal-panel {
+        transition: all 0.3s ease;
+    }
+    .metric-transition {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-6xl">
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900">
+            Career Simulator
+        </h1>
+        <p class="mt-2 text-slate-600">
+            Visualize your 20-year career trajectory as a Software Engineer in the Philippines.
+        </p>
+    </header>
+
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <!-- Data Display -->
+        <div id="data-display" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-10 text-center">
+            <div data-metric="salary" class="metric-card bg-blue-50 p-5 rounded-xl border border-blue-200 cursor-pointer hover:shadow-md hover:border-blue-400 transition metric-transition">
+                <h3 class="text-sm font-semibold text-blue-800 uppercase tracking-wider">
+                    Salary (PHP/mo)
+                </h3>
+                <p id="salary-display" class="text-2xl md:text-3xl font-bold text-blue-900 mt-2">
+                    ₱0
+                </p>
+            </div>
+            <div data-metric="performance" class="metric-card bg-green-50 p-5 rounded-xl border border-green-200 cursor-pointer hover:shadow-md hover:border-green-400 transition metric-transition">
+                <h3 class="text-sm font-semibold text-green-800 uppercase tracking-wider">
+                    Performance
+                </h3>
+                <p id="performance-display" class="text-2xl md:text-3xl font-bold text-green-900 mt-2">
+                    0%
+                </p>
+            </div>
+            <div data-metric="wellBeing" class="metric-card bg-teal-50 p-5 rounded-xl border border-teal-200 cursor-pointer hover:shadow-md hover:border-teal-400 transition metric-transition">
+                <h3 class="text-sm font-semibold text-teal-800 uppercase tracking-wider">
+                    Well-being
+                </h3>
+                <p id="wellbeing-display" class="text-2xl md:text-3xl font-bold text-teal-900 mt-2">
+                    0%
+                </p>
+            </div>
+        </div>
+
+        <!-- Timeline Selector -->
+        <div class="relative pt-10 pb-12">
+            <div id="timeline-container" class="timeline-container">
+                <div id="forecasting-icon" class="forecasting-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Career Details -->
+        <div class="mt-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900 mb-4">
+                Career Snapshot at <span id="year-label">Year 1</span>
+            </h3>
+            <div id="details-display">
+                <h4 id="status-title" class="text-xl font-bold text-slate-800 mb-2"></h4>
+                <p id="status-description" class="text-slate-600 mb-6"></p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div>
+                        <h5 class="font-semibold text-green-700 mb-2 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Opportunities
+                        </h5>
+                        <ul id="opportunities-list" class="list-disc list-inside text-slate-700 space-y-1 pl-2"></ul>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-orange-700 mb-2 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.03-1.742 3.03H4.42c-1.532 0-2.492-1.696-1.742-3.03l5.58-9.92zM10 13a1 1 0 100-2 1 1 0 000 2zm-1-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Things to Note
+                        </h5>
+                        <ul id="things-to-note-list" class="list-disc list-inside text-slate-700 space-y-1 pl-2"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Explanation Modal -->
+<div id="metric-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <!-- Overlay -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 modal-overlay"></div>
+
+    <!-- Panel -->
+    <div id="modal-panel" class="relative bg-white w-full max-w-lg mx-auto rounded-2xl shadow-xl modal-panel">
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-slate-900">
+                    Metric Explanation
+                </h3>
+                <button id="modal-close-btn" class="text-slate-400 hover:text-slate-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="modal-explanation" class="text-slate-700 leading-relaxed">
+                Explanation text will be loaded here.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // --- DATA ---
+    const yearlyData = [
+        {
+            year: 1,
+            salary: 30000,
+            performance: 70,
+            wellBeing: 65,
+            details: {
+                status: "Entry-Level Developer",
+                description: "You're at the starting line, absorbing foundational knowledge in a supportive but fast-paced setting.",
+                opportunities: [
+                    "Master fundamental technologies.",
+                    "Find a mentor.",
+                    "Volunteer for varied tasks.",
+                ],
+                thingsToNote: [
+                    "Ask good questions.",
+                    "Imposter syndrome is normal.",
+                    "Read documentation.",
+                ],
+                salaryExplanation: "A ₱30,000 starting salary is a competitive entry point in the PH market. It reflects your foundational skills and the company's investment in your training.",
+                performanceExplanation: "At 70%, you are meeting expectations for a new hire. Focus is on learning the codebase and processes, not on speed. Accuracy and a willingness to learn are key.",
+                wellBeingExplanation: "A 65% rating is typical. The excitement of a new job is high, but it's balanced by the stress of a steep learning curve and the pressure to prove yourself.",
+            },
+        },
+        {
+            year: 2,
+            salary: 38750,
+            performance: 72,
+            wellBeing: 64,
+            details: {
+                status: "Entry-Level Developer",
+                description: "Your confidence is growing. You can now handle common tasks with less supervision.",
+                opportunities: [
+                    "Take ownership of a small feature.",
+                    "Learn unit testing.",
+                    "Contribute to code reviews.",
+                ],
+                thingsToNote: [
+                    "Avoid getting stuck; ask for help.",
+                    "Solidify core data structure knowledge.",
+                    "Your speed and quality are improving.",
+                ],
+                salaryExplanation: "Your salary sees a healthy increase as you've proven your ability to contribute. You are no longer just a trainee but a functioning member of the team.",
+                performanceExplanation: "The 2% increase reflects growing efficiency. You complete tasks faster and require less guidance, indicating a solid grasp of your role.",
+                wellBeingExplanation: "A slight dip to 64% is common as initial excitement wears off and the reality of daily responsibilities sets in. Managing workload is a new challenge.",
+            },
+        },
+        {
+            year: 3,
+            salary: 47500,
+            performance: 74,
+            wellBeing: 62,
+            details: {
+                status: "Entry-Level Developer",
+                description: "You are becoming a reliable team member, debugging simple issues independently.",
+                opportunities: [
+                    "Deepen your knowledge in one area.",
+                    "Mentor an intern.",
+                    "Explore system design concepts.",
+                ],
+                thingsToNote: [
+                    "Think about business impact.",
+                    "Communication skills are more important.",
+                    "Be proactive in seeking feedback.",
+                ],
+                salaryExplanation: "Nearing the ₱50k mark shows you are becoming a valuable asset. Your skills are now specialized enough to command a higher market rate.",
+                performanceExplanation: "At 74%, you are consistently reliable. You can be trusted with tasks and are starting to anticipate problems, a key sign of growth.",
+                wellBeingExplanation: "Well-being dips to 62% as you take on more responsibility, which can increase stress. You might feel the pressure to perform at a mid-level standard.",
+            },
+        },
+        {
+            year: 4,
+            salary: 56250,
+            performance: 76,
+            wellBeing: 61,
+            details: {
+                status: "Entry-Level (Transitioning)",
+                description: "You are on the cusp of becoming a mid-level developer, trusted to deliver quality work.",
+                opportunities: [
+                    "Lead a small, non-critical project.",
+                    "Improve existing code or processes.",
+                    "Prepare for mid-level interviews.",
+                ],
+                thingsToNote: [
+                    "Demonstrate ownership and initiative.",
+                    "Consistency is key to promotion.",
+                    "Network within your company.",
+                ],
+                salaryExplanation: "This salary reflects your near-mid-level status. You are being compensated for your reliability and the complexity of work you can now handle.",
+                performanceExplanation: "At 76%, you are exceeding the expectations of a junior role. You are proactive and demonstrate the problem-solving skills of a mid-level engineer.",
+                wellBeingExplanation: "The 61% rating reflects the pressure of a pending promotion. You are likely taking on extra work to prove you are ready for the next level.",
+            },
+        },
+        {
+            year: 5,
+            salary: 65000,
+            performance: 78,
+            wellBeing: 60,
+            details: {
+                status: "Mid-Level Developer",
+                description: "You're now a reliable and independent contributor, capable of building complete features.",
+                opportunities: [
+                    "Specialize in a high-demand field.",
+                    "Consider a strategic job hop.",
+                    "Contribute to system design discussions.",
+                ],
+                thingsToNote: [
+                    "Avoid burnout by setting boundaries.",
+                    "Keep your online profiles updated.",
+                    "Solve ambiguous problems.",
+                ],
+                salaryExplanation: "Crossing the ₱65k threshold signifies your official arrival as a mid-level developer. This is a significant jump, reflecting your ability to work independently.",
+                performanceExplanation: "Your 78% performance is the new baseline. You're expected to own features from start to finish, requiring both strong coding and project management skills.",
+                wellBeingExplanation: "Well-being hits a low of 60%. The leap in responsibility is significant, and the pressure to perform without direct supervision can be intense. This is a critical burnout risk period.",
+            },
+        },
+        {
+            year: 6,
+            salary: 74000,
+            performance: 79,
+            wellBeing: 62,
+            details: {
+                status: "Mid-Level Developer",
+                description: "You are proficient in your domain and a go-to person for specific areas of the codebase.",
+                opportunities: [
+                    "Earn a professional certification.",
+                    "Present a technical topic to your team.",
+                    "Optimize a critical piece of the system.",
+                ],
+                thingsToNote: [
+                    "Balance new features with tech debt.",
+                    "Your influence on team practices grows.",
+                    "Think about scalability.",
+                ],
+                salaryExplanation: "Your salary continues its strong climb as you solidify your position. Certifications or specialized skills acquired now directly translate to higher compensation.",
+                performanceExplanation: "A 1% gain to 79% is significant at this level. It means you're not just doing the work, but you're also improving the work of others through optimizations and knowledge sharing.",
+                wellBeingExplanation: "Well-being starts to recover to 62%. You are becoming more comfortable with your responsibilities, and confidence replaces the initial stress of the new role.",
+            },
+        },
+        {
+            year: 7,
+            salary: 83000,
+            performance: 81,
+            wellBeing: 64,
+            details: {
+                status: "Mid-Level Developer",
+                description: "Your expertise is recognized, and you are actively involved in designing new systems.",
+                opportunities: [
+                    "Mentor junior developers officially.",
+                    "Contribute to open-source.",
+                    "Write technical blog posts.",
+                ],
+                thingsToNote: [
+                    "Learn to negotiate technical decisions.",
+                    "Your impact is more than just code.",
+                    "Proactively identify risks.",
+                ],
+                salaryExplanation: "Exceeding ₱80k means you are a high-performing mid-level engineer. Your compensation reflects your growing influence on technical design and mentorship.",
+                performanceExplanation: "At 81%, you are now a leader within your domain. Your performance is measured by your design input and mentorship, not just your individual coding output.",
+                wellBeingExplanation: "Well-being improves to 64% as mastery increases. Job satisfaction comes from seeing your designs implemented and your mentees succeed.",
+            },
+        },
+        {
+            year: 8,
+            salary: 92000,
+            performance: 82,
+            wellBeing: 66,
+            details: {
+                status: "Mid-Level Developer",
+                description: "You are operating at a high level of independence and showing signs of senior-level thinking.",
+                opportunities: [
+                    "Take the lead on a cross-team initiative.",
+                    "Get involved in hiring.",
+                    "Explore a new programming language.",
+                ],
+                thingsToNote: [
+                    "Break down large problems.",
+                    "Develop your estimation skills.",
+                    "Advocate for best practices.",
+                ],
+                salaryExplanation: "Approaching the ₱100k mark, your salary reflects your ability to handle complexity and think about long-term architecture, key senior-level traits.",
+                performanceExplanation: "At 82%, you are taking on senior-level responsibilities like leading initiatives. Your performance is now judged on your ability to handle cross-team collaboration.",
+                wellBeingExplanation: "At 66%, you're finding a better rhythm. You are confident in your skills and are less stressed by ambiguity, leading to a healthier work-life balance.",
+            },
+        },
+        {
+            year: 9,
+            salary: 101000,
+            performance: 84,
+            wellBeing: 68,
+            details: {
+                status: "Mid-Level (Transitioning)",
+                description: "You are performing many senior-level tasks. A promotion is likely on the horizon.",
+                opportunities: [
+                    "Act as a technical lead for a project.",
+                    "Create a technical roadmap.",
+                    "Build relationships with product managers.",
+                ],
+                thingsToNote: [
+                    "Demonstrate leadership.",
+                    "Your ability to influence is a differentiator.",
+                    "Prepare for senior-level interviews.",
+                ],
+                salaryExplanation: "Crossing the ₱100k barrier is a major milestone. It recognizes that you are already delivering senior-level value, even if your title hasn't caught up yet.",
+                performanceExplanation: "At 84%, you are consistently performing at a senior level. You are leading, planning, and influencing, making a clear case for promotion.",
+                wellBeingExplanation: "Well-being rises to 68% with the confidence that comes from operating at a higher level. You feel valued and see a clear path for advancement.",
+            },
+        },
+        {
+            year: 10,
+            salary: 110000,
+            performance: 85,
+            wellBeing: 70,
+            details: {
+                status: "Senior Engineer",
+                description: "You're a technical leader, responsible for code quality, mentoring, and project architecture.",
+                opportunities: [
+                    "Decide between management or technical track.",
+                    "Lead a major project.",
+                    "Build your professional brand.",
+                ],
+                thingsToNote: [
+                    "Soft skills are now critical.",
+                    "You are a team multiplier.",
+                    "Stay updated with industry trends.",
+                ],
+                salaryExplanation: "Your new title comes with a salary of ₱110k, establishing you firmly in the senior bracket. Your compensation is now tied to your leadership and impact.",
+                performanceExplanation: "85% is the new standard for a senior engineer. Your performance is now measured by the success of your projects and the growth of the engineers you mentor.",
+                wellBeingExplanation: "A jump to 70% reflects the autonomy and respect that come with a senior title. You have more control over your work, which improves job satisfaction.",
+            },
+        },
+        {
+            year: 11,
+            salary: 118000,
+            performance: 86,
+            wellBeing: 71,
+            details: {
+                status: "Senior Engineer",
+                description: "You are a force multiplier for your team, unblocking others and resolving complex debates.",
+                opportunities: [
+                    "Drive adoption of a new technology.",
+                    "Fix major technical debt.",
+                    "Mentor mid-level engineers.",
+                ],
+                thingsToNote: [
+                    "Time management is key.",
+                    "Learn to delegate.",
+                    "Build a reputation as a pragmatic leader.",
+                ],
+                salaryExplanation: "Your salary grows as you prove your effectiveness as a senior. Your ability to 'multiply' your team's output is a highly valuable, and compensable, skill.",
+                performanceExplanation: "At 86%, you are excelling in the senior role. You are not just leading but actively improving the team's overall technical health and capability.",
+                wellBeingExplanation: "Well-being continues to rise as you master the senior role. You are adept at balancing deep technical work with your leadership responsibilities.",
+            },
+        },
+        {
+            year: 12,
+            salary: 126000,
+            performance: 87,
+            wellBeing: 72,
+            details: {
+                status: "Senior Engineer",
+                description: "You are thinking beyond your team, considering your work's impact on the entire organization.",
+                opportunities: [
+                    "Contribute to company-wide strategy.",
+                    "Design and build shared platforms.",
+                    "Represent your team in architectural reviews.",
+                ],
+                thingsToNote: [
+                    "Political capital is valuable.",
+                    "Align your work with business goals.",
+                    "Avoid becoming a knowledge silo.",
+                ],
+                salaryExplanation: "Your compensation reflects your expanding influence. As you contribute to company-wide standards and platforms, your value increases significantly.",
+                performanceExplanation: "At 87%, your impact is organization-wide. Your performance is judged by your ability to create solutions that benefit multiple teams.",
+                wellBeingExplanation: "At 72%, your satisfaction comes from seeing your influence grow. You are shaping the company's technology, which provides a strong sense of purpose.",
+            },
+        },
+        {
+            year: 13,
+            salary: 134000,
+            performance: 88,
+            wellBeing: 73,
+            details: {
+                status: "Senior Engineer",
+                description: "Your technical judgment is highly trusted. You are consulted on the most challenging problems.",
+                opportunities: [
+                    "Lead a guild or community of practice.",
+                    "Publish a whitepaper.",
+                    "Explore the path to a Staff Engineer role.",
+                ],
+                thingsToNote: [
+                    "Saying 'no' is an important skill.",
+                    "Focus on the long-term health of systems.",
+                    "Simplifying complexity is a superpower.",
+                ],
+                salaryExplanation: "Your salary reflects your status as a top-tier technical expert. You are paid for your judgment and experience as much as for your code.",
+                performanceExplanation: "An 88% rating indicates you are a go-to expert. You are sought out for the toughest challenges, and your ability to solve them is your key performance metric.",
+                wellBeingExplanation: "At 73%, you have a high degree of autonomy and intellectual freedom, which are powerful drivers of job satisfaction and well-being.",
+            },
+        },
+        {
+            year: 14,
+            salary: 142000,
+            performance: 89,
+            wellBeing: 74,
+            details: {
+                status: "Senior Engineer (Transitioning)",
+                description: "You are operating at a scope and impact level that transcends the standard senior role.",
+                opportunities: [
+                    "Define the technical vision for a new product.",
+                    "Solve a problem no one else could.",
+                    "Mentor other senior engineers.",
+                ],
+                thingsToNote: [
+                    "Your sphere of influence is your primary metric.",
+                    "Be a role model for the org.",
+                    "Seek out ambiguous and impactful problems.",
+                ],
+                salaryExplanation: "Your salary is now in the lead/staff engineer range, recognizing that your impact is far greater than that of a typical senior developer.",
+                performanceExplanation: "At 89%, you are performing at a 'principal-minus' level. You are tackling the most complex and valuable problems, setting you up for the next major career leap.",
+                wellBeingExplanation: "Your well-being is high at 74%. You are at the top of your game, respected for your expertise, and have the freedom to choose the problems you want to solve.",
+            },
+        },
+        {
+            year: 15,
+            salary: 150000,
+            performance: 90,
+            wellBeing: 75,
+            details: {
+                status: "Lead Engineer / Architect",
+                description: "You are a key technical authority, making high-impact decisions that affect multiple teams.",
+                opportunities: [
+                    "Influence the company's technology roadmap.",
+                    "Explore consulting or starting a business.",
+                    "Shape the engineering culture.",
+                ],
+                thingsToNote: [
+                    "Your network is a valuable asset.",
+                    "You are solving business problems with tech.",
+                    "Delegate effectively.",
+                ],
+                salaryExplanation: "A ₱150k salary is the entry point for architectural and lead roles. Your compensation is for strategic vision and technical governance, not just implementation.",
+                performanceExplanation: "A 90% performance rating means you are successfully shaping technology strategy. Your success is measured by the long-term health and success of your systems.",
+                wellBeingExplanation: "At 75%, well-being is strong. It's driven by the satisfaction of having a major impact on the company's direction and mentoring the next generation of leaders.",
+            },
+        },
+        {
+            year: 16,
+            salary: 160000,
+            performance: 91,
+            wellBeing: 76,
+            details: {
+                status: "Lead Engineer / Architect",
+                description: "You are responsible for the health of large-scale systems, spending more time on design and strategy.",
+                opportunities: [
+                    "Drive a major technology migration.",
+                    "Standardize engineering practices.",
+                    "Speak at a national conference.",
+                ],
+                thingsToNote: [
+                    "Tailor your communication to your audience.",
+                    "Justify decisions in terms of business value.",
+                    "Stay hands-on enough to be credible.",
+                ],
+                salaryExplanation: "Your salary reflects your responsibility over critical systems. An architect's pay is tied to the immense value and risk associated with their decisions.",
+                performanceExplanation: "At 91%, you excel at strategic work. Your ability to plan and execute large-scale projects like technology migrations is a key performance indicator.",
+                wellBeingExplanation: "Well-being at 76% is maintained by a focus on high-level, intellectually stimulating work, though the pressure of your responsibilities is significant.",
+            },
+        },
+        {
+            year: 17,
+            salary: 170000,
+            performance: 91,
+            wellBeing: 77,
+            details: {
+                status: "Lead Engineer / Architect",
+                description: "Your role is highly strategic, identifying future technical challenges and opportunities.",
+                opportunities: [
+                    "Innovate with a new competitive framework.",
+                    "Get involved in long-term (3-5 year) planning.",
+                    "Advise senior leadership on tech trends.",
+                ],
+                thingsToNote: [
+                    "Your work has a long feedback cycle.",
+                    "Building alignment for your vision is key.",
+                    "You are a steward of technical assets.",
+                ],
+                salaryExplanation: "Your compensation is for foresight. You are being paid to think years ahead and position the company for future success, a rare and valuable skill.",
+                performanceExplanation: "Performance remains at 91% as your work is now long-term. Success is harder to measure quarterly but is seen in the company's sustained technical excellence.",
+                wellBeingExplanation: "Well-being at 77% comes from engaging in deep, strategic work. While the feedback loop is long, the nature of the work is highly fulfilling.",
+            },
+        },
+        {
+            year: 18,
+            salary: 180000,
+            performance: 92,
+            wellBeing: 78,
+            details: {
+                status: "Lead Engineer / Architect",
+                description: "You are a thought leader with a deep understanding of the business and technology landscape.",
+                opportunities: [
+                    "Contribute to industry standards.",
+                    "Consider a move to an executive role.",
+                    "Write a book or create a course.",
+                ],
+                thingsToNote: [
+                    "Your legacy is your systems and people.",
+                    "Balance innovation with pragmatism.",
+                    "Anticipate future problems.",
+                ],
+                salaryExplanation: "At ₱180k, you are in the top percentile of technical contributors. Your salary reflects your status as a thought leader in your field.",
+                performanceExplanation: "A bump to 92% signifies your external impact. Your performance is now also measured by your influence on the wider tech community.",
+                wellBeingExplanation: "Well-being at 78% is driven by the satisfaction of thought leadership. You are not just building things but are shaping the industry and sharing your knowledge.",
+            },
+        },
+        {
+            year: 19,
+            salary: 190000,
+            performance: 92,
+            wellBeing: 79,
+            details: {
+                status: "Architect / Principal Engineer",
+                description: "You are at the pinnacle of the individual contributor track, with influence equivalent to a director.",
+                opportunities: [
+                    "Define next-gen product architecture.",
+                    "Lead a cross-functional team on a major problem.",
+                    "Become an external tech ambassador.",
+                ],
+                thingsToNote: [
+                    "You are accountable for major business success.",
+                    "Master both breadth and depth in tech.",
+                    "Your job is to make everyone better.",
+                ],
+                salaryExplanation: "Nearing ₱200k, your salary is commensurate with a director-level role. You are compensated for taking on the highest level of technical accountability.",
+                performanceExplanation: "Performance at 92% is about leverage. Your primary function is to make other teams and engineers more successful through your architectural guidance and vision.",
+                wellBeingExplanation: "Well-being at 79% is high. It comes from the deep satisfaction of seeing your vision executed by empowered teams and having a lasting impact on the business.",
+            },
+        },
+        {
+            year: 20,
+            salary: 200000,
+            performance: 93,
+            wellBeing: 80,
+            details: {
+                status: "Principal Engineer / Director",
+                description: "You operate at a strategic level, focusing on future-proofing the company's technology and driving innovation.",
+                opportunities: [
+                    "Transition into executive leadership (CTO/VP).",
+                    "Serve as a technical advisor for startups.",
+                    "Drive industry-wide conversations.",
+                ],
+                thingsToNote: [
+                    "Set the vision and empower others.",
+                    "Build a legacy and succession plan.",
+                    "Your impact is measured by business success.",
+                ],
+                salaryExplanation: "A ₱200k+ salary places you in an executive or equivalent tier. Your compensation is for driving the overall business forward through technology strategy and innovation.",
+                performanceExplanation: "At 93%, your performance is measured by the company's success. You are judged on your ability to set a winning strategy and build a team that can execute it.",
+                wellBeingExplanation: "Well-being peaks at 80%. It's the culmination of a long and successful career, characterized by a sense of accomplishment, legacy, and shaping the future.",
+            },
+        }
+    ];
+
+    // --- DOM ELEMENTS ---
+    const timelineContainer = document.getElementById('timeline-container');
+    const salaryDisplay = document.getElementById('salary-display');
+    const performanceDisplay = document.getElementById('performance-display');
+    const wellbeingDisplay = document.getElementById('wellbeing-display');
+    const yearLabel = document.getElementById('year-label');
+    const forecastingIcon = document.getElementById('forecasting-icon');
+    const statusTitle = document.getElementById('status-title');
+    const statusDescription = document.getElementById('status-description');
+    const opportunitiesList = document.getElementById('opportunities-list');
+    const thingsToNoteList = document.getElementById('things-to-note-list');
+    const metricModal = document.getElementById('metric-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalPanel = document.getElementById('modal-panel');
+    const modalTitle = document.getElementById('modal-title');
+    const modalExplanation = document.getElementById('modal-explanation');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    let currentYear = 1;
+
+    // --- FUNCTIONS ---
+    function createTimeline() {
+        for (let year = 1; year <= 20; year++) {
+            const marker = document.createElement('div');
+            marker.className = 'timeline-marker';
+            marker.dataset.year = year;
+            marker.style.left = `${((year - 1) / 19) * 100}%`;
+
+            if (year === 1 || year % 5 === 0 || year === 20) {
+                const label = document.createElement('span');
+                label.className = 'timeline-marker-label';
+                label.textContent = `Y${year}`;
+                marker.appendChild(label);
+            }
+
+            marker.addEventListener('click', () => {
+                currentYear = year;
+                updateUI();
+            });
+            timelineContainer.appendChild(marker);
+        }
+    }
+
+    function updateUI() {
+        const data = yearlyData.find(d => d.year === currentYear) || yearlyData[0];
+        
+        // Animate metric transitions
+        salaryDisplay.textContent = `₱${data.salary.toLocaleString()}`;
+        performanceDisplay.textContent = `${data.performance}%`;
+        wellbeingDisplay.textContent = `${data.wellBeing}%`;
+        
+        yearLabel.textContent = `Year ${currentYear}`;
+        statusTitle.textContent = data.details.status;
+        statusDescription.textContent = data.details.description;
+        
+        opportunitiesList.innerHTML = data.details.opportunities
+            .map(item => `<li>${item}</li>`)
+            .join('');
+            
+        thingsToNoteList.innerHTML = data.details.thingsToNote
+            .map(item => `<li>${item}</li>`)
+            .join('');
+
+        // Update active marker
+        document.querySelectorAll('.timeline-marker').forEach(marker => {
+            marker.classList.toggle('active', parseInt(marker.dataset.year) === currentYear);
+        });
+
+        // Move forecasting icon
+        forecastingIcon.style.left = `${((currentYear - 1) / 19) * 100}%`;
+    }
+
+    function openModal(metricType) {
+        const data = yearlyData.find(d => d.year === currentYear);
+        let title = '';
+        let explanation = '';
+
+        switch (metricType) {
+            case 'salary':
+                title = `Salary Explanation (Year ${currentYear})`;
+                explanation = data.details.salaryExplanation;
+                break;
+            case 'performance':
+                title = `Performance Explanation (Year ${currentYear})`;
+                explanation = data.details.performanceExplanation;
+                break;
+            case 'wellBeing':
+                title = `Well-being Explanation (Year ${currentYear})`;
+                explanation = data.details.wellBeingExplanation;
+                break;
+        }
+
+        modalTitle.textContent = title;
+        modalExplanation.textContent = explanation;
+        metricModal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        metricModal.classList.add('hidden');
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        createTimeline();
+        updateUI();
+
+        // Metric card click handlers
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('click', () => {
+                openModal(card.dataset.metric);
+            });
+        });
+
+        // Modal close handlers
+        modalCloseBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+    });
+</script>
+{% endblock %}

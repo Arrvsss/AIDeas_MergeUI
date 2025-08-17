@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Recommended Training{% endblock %}
+
+{% block extra_css %}
+<style>
+    .loader {
+        border-top-color: #3b82f6;
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 1s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+    <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <!-- User Profile & XAI Section -->
+        <div id="user-profile-xai" class="mb-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+            <div class="flex items-start sm:items-center space-x-4">
+                <img src="https://placehold.co/80x80/E2E8F0/4A5568?text=User" alt="User Profile" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/80x80/E2E8F0/4A5568?text=U';">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Juan Dela Cruz</h2>
+                    <p class="text-sm text-slate-600">Aspiring Full-Stack Developer</p>
+                    <p class="text-xs text-slate-500 mt-1">Group: FoodCast</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h3 class="font-semibold text-slate-900">Why These Recommendations?</h3>
+                <p class="text-sm text-slate-700 mt-1">
+                    Our AI has selected these training programs for you based on the following profile information:
+                </p>
+                <ul class="mt-2 space-y-1 text-sm list-disc list-inside text-slate-600">
+                    <li id="xai-skills"><strong>Your Skills:</strong> <span>Loading...</span></li>
+                    <li id="xai-interests"><strong>Your Interests:</strong> <span>Loading...</span></li>
+                    <li id="xai-goals"><strong>Your Career Goals:</strong> <span>Loading...</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loader" class="mt-8 flex items-center justify-center">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+        </div>
+
+        <!-- Training Programs Section -->
+        <div id="training-container" class="mt-8 hidden">
+             <h2 class="text-2xl font-bold text-slate-900 mb-4">Recommended For You</h2>
+            <div id="training-list" class="space-y-4">
+                <!-- Training programs will be injected here -->
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loader = document.getElementById('loader');
+        const trainingContainer = document.getElementById('training-container');
+        const trainingList = document.getElementById('training-list');
+        
+        const xaiSkills = document.querySelector('#xai-skills span');
+        const xaiInterests = document.querySelector('#xai-interests span');
+        const xaiGoals = document.querySelector('#xai-goals span');
+
+        // User profile data
+        const userProfile = {
+            skills: "JavaScript, Python, Data Analysis, Graphic Design",
+            interests: "Web Development, technology trends, freelancing",
+            careerGoals: "Become a full-stack developer, work remotely"
+        };
+
+        // Training program recommendations
+        const recommendedPrograms = [
+            {
+                "program_name": "Full-Stack Web Development NC III",
+                "description": "A comprehensive TESDA program covering both front-end and back-end technologies to build complete web applications. Aligns with your goal to become a full-stack developer.",
+                "provider": "TESDA",
+                "link": "#"
+            },
+            {
+                "program_name": "Python for Data Science",
+                "description": "This course from DICT focuses on Python's data analysis libraries (like Pandas and NumPy), leveraging your existing Python and Data Analysis skills for a high-demand field.",
+                "provider": "DICT - DigitalJobsPH",
+                "link": "#"
+            },
+            {
+                "program_name": "Advanced JavaScript for Remote Work",
+                "description": "Deepen your JavaScript knowledge with modern frameworks (like React or Vue) essential for remote development roles, matching your interest in freelancing and remote work.",
+                "provider": "Coursera",
+                "link": "#"
+            },
+            {
+                "program_name": "UI/UX Design for Developers",
+                "description": "Leverage your Graphic Design skill to improve your web development projects. This course teaches design principles from a developer's perspective.",
+                "provider": "Udemy",
+                "link": "#"
+            }
+        ];
+
+        function displayTrainingPrograms() {
+            // Populate the XAI section
+            xaiSkills.textContent = userProfile.skills;
+            xaiInterests.textContent = userProfile.interests;
+            xaiGoals.textContent = userProfile.careerGoals;
+
+            // Clear any previous list items
+            trainingList.innerHTML = '';
+
+            if (Array.isArray(recommendedPrograms) && recommendedPrograms.length > 0) {
+                recommendedPrograms.forEach(program => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-slate-100 p-4 rounded-lg shadow-sm transition-transform transform hover:scale-[1.02]';
+                    card.innerHTML = `
+                        <h3 class="font-semibold text-lg text-slate-900">${program.program_name}</h3>
+                        <p class="mt-1 text-sm text-slate-500">Provider: ${program.provider}</p>
+                        <p class="mt-2 text-slate-700">${program.description}</p>
+                        <a href="${program.link}" target="_blank" class="mt-3 inline-block text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                            Learn More &rarr;
+                        </a>
+                    `;
+                    trainingList.appendChild(card);
+                });
+                trainingContainer.classList.remove('hidden');
+            } else {
+                trainingList.innerHTML = '<p class="text-slate-500">No training programs are currently available.</p>';
+            }
+            
+            loader.classList.add('hidden');
+        }
+
+        // Call the function to display the programs
+        displayTrainingPrograms();
+    });
+</script>
+{% endblock %}

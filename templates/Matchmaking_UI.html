@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}AI Job Matchmaking Interface{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Add these new styles for the popup */
+    .job-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .job-popup-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .job-popup {
+        background: white;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        position: relative;
+        padding: 2rem;
+    }
+    .close-popup {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+    }
+    .job-card {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 md:p-8">
+    <!-- Your existing content remains exactly the same -->
+    <header class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Your AI-Powered Career Navigator</h1>
+        <p class="text-slate-600 mt-2">Discover jobs that match your profile and get actionable insights to grow your career.</p>
+    </header>
+
+    <div id="user-profile-display" class="bg-white p-6 rounded-2xl shadow-lg mb-8">
+        <!-- Profile content will be inserted here by JavaScript -->
+    </div>
+
+    <main>
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+            <h2 class="text-2xl font-bold text-slate-900">Recommended Job Openings</h2>
+            <div class="flex items-center gap-2 text-sm">
+                <label for="sort" class="font-medium text-slate-700">Sort by:</label>
+                <select id="sort" name="sort" class="rounded-lg border-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option>Match Score</option>
+                    <option>Salary</option>
+                    <option>Location</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="job-listings" class="space-y-6">
+            <!-- Job cards will be dynamically inserted here -->
+        </div>
+    </main>
+</div>
+
+<!-- Add this new popup HTML at the bottom -->
+<div id="jobPopupOverlay" class="job-popup-overlay">
+    <div class="job-popup">
+        <span class="close-popup">&times;</span>
+        <div id="jobPopupContent"></div>
+        <a id="careerSimulationBtn" href="/simulator" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition text-center block">
+            Generate Career Simulation
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Your existing mock data and functions remain exactly the same
+    const graduateProfile = {
+        name: "Juan Dela Cruz",
+        degree: "BS Computer Science",
+        skills: ["JavaScript", "React", "HTML", "CSS", "Git"],
+        certifications: ["Google IT Support"],
+        experiences: ["Internship at XYZ Corp"],
+    };
+
+    const jobOffers = [
+        {
+            id: 1,
+            title: "Frontend Developer",
+            company: "Tech Solutions Inc.",
+            location: "Quezon City, Metro Manila",
+            salaryRange: "₱30,000 - ₱45,000",
+            matchScore: 85,
+            reasoning: {
+                matchedSkills: ["JavaScript", "React", "HTML", "CSS", "Git"],
+                missingSkills: ["TypeScript", "Next.js"],
+                requiredCertifications: ["AWS Cloud Practitioner"],
+                demandScore: "High"
+            },
+            recommendations: [
+                "Enroll in a TypeScript for Beginners course to broaden your skillset.",
+                "Consider getting the AWS Cloud Practitioner certification to stand out.",
+                "Build a personal project using Next.js to gain practical experience."
+            ],
+            salaryBoost: "Completing these could boost your eligibility for roles up to ₱55,000."
+        },
+        {
+            id: 2,
+            title: "Data Analyst",
+            company: "Analytics Co.",
+            location: "Makati, Metro Manila",
+            salaryRange: "₱25,000 - ₱40,000",
+            matchScore: 68,
+            reasoning: {
+                matchedSkills: ["Git"],
+                missingSkills: ["SQL", "Python", "Tableau"],
+                requiredCertifications: ["Tableau Certified Data Analyst"],
+                demandScore: "Medium"
+            },
+            recommendations: [
+                "Take a foundational SQL course on a platform like Coursera or Udemy.",
+                "Learn Python for data analysis using libraries like Pandas and NumPy.",
+                "Work towards the Tableau Certified Data Analyst credential to validate your skills."
+            ],
+            salaryBoost: "Gaining these skills could increase your match score to over 80%."
+        },
+        {
+            id: 3,
+            title: "Junior Web Developer",
+            company: "Digital Creators PH",
+            location: "Cebu City, Cebu",
+            salaryRange: "₱28,000 - ₱42,000",
+            matchScore: 75,
+            reasoning: {
+                matchedSkills: ["JavaScript", "HTML", "CSS", "Git"],
+                missingSkills: ["PHP", "WordPress"],
+                requiredCertifications: [],
+                demandScore: "High"
+            },
+            recommendations: [
+                "Learn the basics of PHP as it's common in many web agencies.",
+                "Gain experience with WordPress development, a highly in-demand skill.",
+            ],
+            salaryBoost: "Adding PHP/WordPress skills can make you a versatile candidate for agency roles."
+        },
+        {
+            id: 4,
+            title: "IT Support Specialist",
+            company: "Global BPO Services",
+            location: "Taguig, Metro Manila",
+            salaryRange: "₱22,000 - ₱35,000",
+            matchScore: 92,
+            reasoning: {
+                matchedSkills: ["Google IT Support", "Git"],
+                missingSkills: ["Active Directory", "Networking Basics"],
+                requiredCertifications: ["CompTIA A+"],
+                demandScore: "Medium"
+            },
+            recommendations: [
+                "Study for the CompTIA A+ certification, a standard for IT support roles.",
+                "Familiarize yourself with Active Directory user management.",
+                "Review core networking concepts like TCP/IP and DNS."
+            ],
+            salaryBoost: "A CompTIA A+ certification can solidify your position as a top candidate."
+        }
+    ];
+
+    // DOM Elements - add new ones for the popup
+    const userProfileContainer = document.getElementById('user-profile-display');
+    const jobListingsContainer = document.getElementById('job-listings');
+    const jobPopupOverlay = document.getElementById('jobPopupOverlay');
+    const jobPopupContent = document.getElementById('jobPopupContent');
+    const careerSimulationBtn = document.getElementById('careerSimulationBtn');
+    const closePopupButtons = document.querySelectorAll('.close-popup');
+
+    // Your existing helper functions remain the same
+    function getScoreColor(score) {
+        if (score >= 85) return { text: 'text-emerald-500', bg: 'bg-emerald-100', ring: 'ring-emerald-500' };
+        if (score >= 70) return { text: 'text-amber-500', bg: 'bg-amber-100', ring: 'ring-amber-500' };
+        return { text: 'text-rose-500', bg: 'bg-rose-100', ring: 'ring-rose-500' };
+    }
+
+    function getDemandColor(demand) {
+        switch (demand.toLowerCase()) {
+            case 'high': return 'bg-emerald-100 text-emerald-800';
+            case 'medium': return 'bg-amber-100 text-amber-800';
+            default: return 'bg-slate-100 text-slate-800';
+        }
+    }
+
+    // New function to show job popup
+   function showJobPopup(job) {
+        const scoreColor = getScoreColor(job.matchScore);
+        
+        jobPopupContent.innerHTML = `
+            <div class="space-y-6">
+                <!-- Header with progress indicator -->
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-1">${job.title}</h2>
+                    <p class="text-lg text-slate-600">${job.company} • ${job.location}</p>
+                    
+                    <div class="mt-4 flex justify-center">
+                        <div class="relative w-20 h-20">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="text-slate-200" stroke-width="8" stroke="currentColor" fill="transparent" r="36" cx="50" cy="50"/>
+                                <circle class="${scoreColor.text}" stroke-width="8"
+                                    stroke-dasharray="226"
+                                    stroke-dashoffset="${226 - (job.matchScore / 100 * 226)}"
+                                    stroke-linecap="round"
+                                    fill="transparent" r="36" cx="50" cy="50"/>
+                            </svg>
+                            <span class="absolute inset-0 flex items-center justify-center text-xl font-bold ${scoreColor.text}">
+                                ${job.matchScore}%
+                            </span>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-sm ${scoreColor.text} font-medium">Match Score</p>
+                </div>
+
+                <!-- Progress Tracker -->
+                <div class="bg-slate-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-slate-800 mb-3">Your Application Checklist</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white mr-3">✓</span>
+                            <div>
+                                <p class="font-medium">Profile Complete</p>
+                                <p class="text-xs text-slate-500">All required sections filled</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 ${job.matchScore > 70 ? 'bg-green-500' : 'bg-yellow-500'} rounded-full flex items-center justify-center text-white mr-3">
+                                ${job.matchScore > 70 ? '✓' : '!'}
+                            </span>
+                            <div>
+                                <p class="font-medium">Skills Match</p>
+                                <p class="text-xs text-slate-500">${job.matchScore > 70 ? 'Meets requirements' : 'Needs improvement'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-white mr-3">2</span>
+                            <div>
+                                <p class="font-medium">Custom Materials</p>
+                                <p class="text-xs text-slate-500">Resume & cover letter</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Steps -->
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">Next Steps to Apply</h3>
+                    <ul class="list-disc list-inside space-y-2 text-sm text-slate-700 mb-4 pl-2">
+                        <li><strong>Update your resume</strong> to highlight ${job.reasoning.matchedSkills.slice(0,2).join(' and ')} experience</li>
+                        <li><strong>Prepare examples</strong> of your work with ${job.reasoning.matchedSkills[0]}</li>
+                        ${job.reasoning.missingSkills.length > 0 ? 
+                            `<li><strong>Address gaps</strong> by mentioning your ${job.reasoning.missingSkills[0]} learning plan</li>` : ''
+                        }
+                        <li><strong>Research</strong> ${job.company}'s recent projects</li>
+                    </ul>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="space-y-3">
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                        Apply Now
+                    </button>
+                    <button class="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition">
+                        Save for Later
+                    </button>
+                    <a href="/training" class="block text-center text-sm text-blue-600 hover:text-blue-800 mt-2">
+                        Find training to improve your match
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        careerSimulationBtn.href = `/simulator?role=${encodeURIComponent(job.title)}&company=${encodeURIComponent(job.company)}&salary=${encodeURIComponent(job.salaryRange)}`;
+        jobPopupOverlay.classList.add('active');
+    }
+
+    // Close popup function
+    function closePopup() {
+        jobPopupOverlay.classList.remove('active');
+    }
+
+    // Your existing render functions remain the same
+    function renderUserProfile(profile) {
+        const profileHTML = `
+            <div class="flex items-start justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-slate-900">${profile.name}</h3>
+                    <p class="text-slate-600 font-medium">${profile.degree}</p>
+                </div>
+                <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">View Full Profile</a>
+            </div>
+            <div class="mt-4 border-t border-slate-200 pt-4 space-y-3">
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-800 mb-2">Your Skills</h4>
+                    <div class="flex flex-wrap gap-2">
+                        ${profile.skills.map(skill => `<span class="bg-sky-100 text-sky-800 px-2 py-1 rounded-md text-xs font-medium">${skill}</span>`).join('')}
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-800 mb-2">Your Certifications</h4>
+                    <div class="flex flex-wrap gap-2">
+                         ${profile.certifications.map(cert => `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-medium">${cert}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        userProfileContainer.innerHTML = profileHTML;
+    }
+
+    function renderJobListings(jobs) {
+        jobListingsContainer.innerHTML = '';
+        jobs.forEach(job => {
+            const scoreColor = getScoreColor(job.matchScore);
+            const demandColor = getDemandColor(job.reasoning.demandScore);
+            const radius = 45;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (job.matchScore / 100) * circumference;
+
+            const jobCard = document.createElement('div');
+            jobCard.className = 'job-card bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1';
+            jobCard.innerHTML = `
+                <div class="p-6">
+                    <div class="flex flex-col sm:flex-row gap-6">
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-bold text-slate-900">${job.title}</h3>
+                            <p class="text-slate-600 font-medium">${job.company}</p>
+                            <div class="mt-2 flex items-center text-sm text-slate-500 gap-4">
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                                    ${job.location}
+                                </span>
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.158-.103.346-.196.57-.293a1 1 0 011.266.313l.833 1.25a1 1 0 01-.223 1.34l-1.096.73a1 1 0 01-1.267-.313l-.833-1.25a1 1 0 01.223-1.34zM10 18a8 8 0 100-16 8 8 0 000 16zm0 2a10 10 0 100-20 10 10 0 000 20z" /></svg>
+                                    ${job.salaryRange}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 flex flex-col items-center justify-center">
+                            <div class="relative w-24 h-24">
+                                <svg class="w-full h-full" viewBox="0 0 100 100">
+                                    <circle class="text-slate-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/>
+                                    <circle class="${scoreColor.text}" stroke-width="10"
+                                        stroke-dasharray="${circumference}"
+                                        stroke-dashoffset="${offset}"
+                                        stroke-linecap="round"
+                                        fill="transparent" r="${radius}" cx="50" cy="50"
+                                        class="progress-ring__circle"/>
+                                </svg>
+                                <span class="absolute inset-0 flex items-center justify-center text-2xl font-bold ${scoreColor.text}">${job.matchScore}%</span>
+                            </div>
+                            <span class="text-sm font-semibold mt-1 ${scoreColor.text}">Match Score</span>
+                        </div>
+                    </div>
+
+                    <!-- XAI Explanation Section -->
+                    <div class="mt-6 border-t border-slate-200 pt-4">
+                        <h4 class="font-semibold text-slate-800 mb-3">Why it's a match:</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="font-medium mb-2">Skills Matched</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${job.reasoning.matchedSkills.map(skill => `<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md text-xs font-medium">${skill}</span>`).join('') || '<span class="text-slate-500 text-xs">None</span>'}
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-2">Skill Gaps</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${job.reasoning.missingSkills.map(skill => `<span class="bg-rose-100 text-rose-800 px-2 py-1 rounded-md text-xs font-medium">${skill}</span>`).join('') || '<span class="text-slate-500 text-xs">None</span>'}
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-2">Certifications Needed</p>
+                                <div class="flex flex-wrap gap-2">
+                                    ${job.reasoning.requiredCertifications.map(cert => `<span class="bg-sky-100 text-sky-800 px-2 py-1 rounded-md text-xs font-medium">${cert}</span>`).join('') || '<span class="text-slate-500 text-xs">None required for this role.</span>'}
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-2">Industry Demand</p>
+                                <span class="px-2 py-1 rounded-md text-xs font-medium ${demandColor}">${job.reasoning.demandScore}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recommendations Section -->
+                    <div class="mt-6 border-t border-slate-200 pt-4 bg-slate-50 -mx-6 px-6 pb-6 rounded-b-2xl">
+                        <h4 class="font-semibold text-slate-800 mb-3">How to Improve Your Match:</h4>
+                        <ul class="space-y-2 text-sm text-slate-700 list-disc list-inside">
+                            ${job.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                        <p class="mt-3 text-xs font-semibold text-indigo-600 italic">${job.salaryBoost}</p>
+                    </div>
+                </div>
+            `;
+            
+            jobCard.addEventListener('click', () => showJobPopup(job));
+            jobListingsContainer.appendChild(jobCard);
+        });
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        renderUserProfile(graduateProfile);
+        renderJobListings(jobOffers);
+        
+        // Event listeners for popups
+        closePopupButtons.forEach(btn => {
+            btn.addEventListener('click', closePopup);
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === jobPopupOverlay) {
+                closePopup();
+            }
+        });
+    });
+</script>
+{% endblock %}
