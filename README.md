@@ -1,33 +1,38 @@
 # TaraTrabaho - Your Trabahossistant 
 
-A Flask-based web application that helps graduates in Region V, Philippines find job opportunities matching their skills and career goals.
+A Flask-based interface mockup for a future job matching platform (currently UI-only).
 
-## Features
+## Current Status
+⚠️ **This is a frontend prototype only** - All data is mock/sample data. No real AI or backend logic is implemented yet.
 
-### Core Functionality
-- **User Profiles**:
-  - Personal information storage
-  - Education background tracking
-  - Skills and certifications management
-- **Job Matching**:
-  - AI-powered job recommendations
-  - Match scoring system (0-100%)
-  - Detailed compatibility analysis
-- **Career Simulation**:
-  - 20-year career trajectory projections
-  - Salary growth visualizations
-  - Milestone recommendations
+## Features (UI Only)
 
 ### Pages
-1. **Dashboard** - Overview of matches and progress
-2. **Profile Management** - Edit personal and professional details
-3. **Job Matchmaking** - View recommended positions
-4. **Career Simulator** - Explore future career paths
-5. **Training Programs** - Discover skill-building opportunities
+| Page | Description | Status |
+|------|-------------|--------|
+| Dashboard | Overview with stats cards | ✅ Complete |
+| Profile | Form for user information | ✅ Complete | 
+| Job Matchmaking | Job listings with mock match scores | ✅ Complete |
+| Career Simulator | Salary projection timeline | ✅ Complete |
+| Training Programs | Recommended courses UI | ✅ Complete |
 
-## Technical Stack
-- **Frontend**: HTML5, Tailwind CSS, JavaScript
-- **Backend**: Python/Flask
-- **Templating**: Jinja2
-- **Database**: SQLite (can be configured for PostgreSQL/MySQL)
+### UI Components
+- Responsive layouts with Tailwind CSS
+- Interactive job cards with hover effects
+- Form validation styling
+- Popup modals for details
+- Data visualization placeholders
 
+## Technical Details
+
+### Frontend
+- **HTML5** with Jinja2 templating
+- **Tailwind CSS** for styling
+- **Vanilla JavaScript** for basic interactivity
+- **Static mock data** in JavaScript files
+
+### Backend (Minimal)
+- **Flask** routing only
+- No database yet
+- No user authentication
+- No AI processing
