@@ -14,7 +14,8 @@
         </div>
         <div class="flex items-center space-x-2">
             <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User" class="w-10 h-10 rounded-full">
-            <span class="font-medium">Juan Dela Cruz</span>
+            <!-- give the span an id so JS can replace it with a link when local profile exists -->
+            <span id="dashboard-username" class="font-medium">Juan Dela Cruz</span>
         </div>
     </div>
 </div>
@@ -184,4 +185,31 @@
         </a>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function(){
+    try {
+      const storageKey = 'profileDraft';
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return;
+      const el = document.getElementById('dashboard-username');
+      if (!el) return;
+      const data = JSON.parse(saved || '{}');
+      const name = (data.fullName && data.fullName.trim()) ? data.fullName.trim() : el.textContent.trim();
+      const a = document.createElement('a');
+      a.href = "{{ url_for('profile') }}";
+      a.className = el.className;
+      a.textContent = name;
+      a.style.textDecoration = 'none';
+      // optional: keep hover hint
+      a.title = 'View profile';
+      el.replaceWith(a);
+    } catch (e) {
+      // silent fail for prototypes
+      console.error(e);
+    }
+  })();
+</script>
 {% endblock %}

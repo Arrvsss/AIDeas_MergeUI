@@ -1,25 +1,10 @@
+<!DOCTYPE html>
 {% extends "base.html" %}
 
 {% block title %}Recommended Training{% endblock %}
 
 {% block extra_css %}
-<style>
-    .loader {
-        border-top-color: #3b82f6;
-        -webkit-animation: spin 1s linear infinite;
-        animation: spin 1s linear infinite;
-    }
-
-    @-webkit-keyframes spin {
-        0% { -webkit-transform: rotate(0deg); }
-        100% { -webkit-transform: rotate(360deg); }
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -28,11 +13,11 @@
         <!-- User Profile & XAI Section -->
         <div id="user-profile-xai" class="mb-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
             <div class="flex items-start sm:items-center space-x-4">
-                <img src="https://placehold.co/80x80/E2E8F0/4A5568?text=User" alt="User Profile" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/80x80/E2E8F0/4A5568?text=U';">
+                <img id="training-user-avatar" src="https://placehold.co/80x80/E2E8F0/4A5568?text=User" alt="User Profile" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/80x80/E2E8F0/4A5568?text=U';">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800">Juan Dela Cruz</h2>
-                    <p class="text-sm text-slate-600">Aspiring Full-Stack Developer</p>
-                    <p class="text-xs text-slate-500 mt-1">Group: FoodCast</p>
+                    <h2 id="training-user-name" class="text-xl font-bold text-slate-800">Juan Dela Cruz</h2>
+                    <p id="training-user-role" class="text-sm text-slate-600">Aspiring Full-Stack Developer</p>
+                    <p id="training-user-group" class="text-xs text-slate-500 mt-1">Group: FoodCast</p>
                 </div>
             </div>
             <div class="mt-4">
@@ -75,14 +60,21 @@
         const xaiInterests = document.querySelector('#xai-interests span');
         const xaiGoals = document.querySelector('#xai-goals span');
 
-        // User profile data
-        const userProfile = {
+        const nameEl = document.getElementById('training-user-name');
+        const roleEl = document.getElementById('training-user-role');
+        const groupEl = document.getElementById('training-user-group');
+        const avatarEl = document.getElementById('training-user-avatar');
+
+        // fallback/mock profile (used when no local profile found)
+        const fallbackProfile = {
+            fullName: "Juan Dela Cruz",
+            course: "Aspiring Full-Stack Developer",
             skills: "JavaScript, Python, Data Analysis, Graphic Design",
             interests: "Web Development, technology trends, freelancing",
             careerGoals: "Become a full-stack developer, work remotely"
         };
 
-        // Training program recommendations
+        // Training program recommendations (unchanged)
         const recommendedPrograms = [
             {
                 "program_name": "Full-Stack Web Development NC III",
@@ -110,11 +102,50 @@
             }
         ];
 
-        function displayTrainingPrograms() {
+        // try to read local profile from localStorage (profileDraft)
+        function loadLocalProfile() {
+            try {
+                const raw = localStorage.getItem('profileDraft');
+                if (!raw) return null;
+                const saved = JSON.parse(raw);
+                return saved;
+            } catch (e) {
+                console.warn('Failed to parse local profile:', e);
+                return null;
+            }
+        }
+
+        // normalize profile fields for this page
+        function normalizeProfile(saved) {
+            if (!saved) return fallbackProfile;
+            const skills = Array.isArray(saved.skills) ? saved.skills.join(', ') :
+                           (typeof saved.skills === 'string' ? saved.skills : '');
+            const interests = saved.interests || saved.interest || saved.interestsList || '';
+            const careerGoals = saved.careerGoals || saved.goals || '';
+            const fullName = saved.fullName || saved.name || saved.fullname || fallbackProfile.fullName;
+            const course = saved.course || saved.degree || fallbackProfile.course;
+            return {
+                fullName,
+                course,
+                skills,
+                interests,
+                careerGoals
+            };
+        }
+
+        function displayTrainingPrograms(profile) {
             // Populate the XAI section
-            xaiSkills.textContent = userProfile.skills;
-            xaiInterests.textContent = userProfile.interests;
-            xaiGoals.textContent = userProfile.careerGoals;
+            xaiSkills.textContent = profile.skills || 'No skills listed';
+            xaiInterests.textContent = profile.interests || 'No interests listed';
+            xaiGoals.textContent = profile.careerGoals || 'No career goals listed';
+
+            // update header info
+            nameEl.textContent = profile.fullName || fallbackProfile.fullName;
+            roleEl.textContent = profile.course || fallbackProfile.course;
+            // remove group if not available
+            if (!profile.group) {
+                groupEl.style.display = 'none';
+            }
 
             // Clear any previous list items
             trainingList.innerHTML = '';
@@ -141,8 +172,10 @@
             loader.classList.add('hidden');
         }
 
-        // Call the function to display the programs
-        displayTrainingPrograms();
+        // Initialize display using local profile if present
+        const savedProfile = loadLocalProfile();
+        const profile = normalizeProfile(savedProfile);
+        displayTrainingPrograms(profile);
     });
 </script>
 {% endblock %}

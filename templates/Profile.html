@@ -3,24 +3,7 @@
 {% block title %}Profile Section{% endblock %}
 
 {% block extra_css %}
-<style>
-    .form-input {
-        transition: all 0.2s ease-in-out;
-    }
-    .form-input:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-    }
-    .form-select {
-        transition: all 0.2s ease-in-out;
-    }
-    .form-select:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -35,88 +18,167 @@
         </p>
     </header>
 
+    <!-- Profile preview (will show when saved data exists) -->
+    <div id="profile-preview" class="max-w-4xl mx-auto mb-6 hidden">
+        <!-- populated by JS -->
+    </div>
+
     <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-        <form id="profile-form">
-            <!-- Personal Information Section -->
-            <div class="mb-8">
-                <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-4">Personal Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" placeholder="Juan Dela Cruz"
-                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="juan.cruz@example.com"
-                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-                    <div>
-                        <label for="contactNumber" class="block text-sm font-medium text-slate-700 mb-1">Contact Number</label>
-                        <input type="tel" id="contactNumber" name="contactNumber" placeholder="0912-345-6789"
-                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-slate-700 mb-1">Region V Address</label>
-                        <input type="text" id="address" name="address" placeholder="Legazpi City, Albay"
-                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+        <!-- wrap the form so we can hide/show the whole block -->
+        <div id="profile-form-container">
+            <form id="profile-form">
+                <!-- Personal Information Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-4">Personal Information</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="Juan Dela Cruz"
+                                class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="juan.cruz@example.com"
+                                class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
+                        <div>
+                            <label for="contactNumber" class="block text-sm font-medium text-slate-700 mb-1">Contact Number</label>
+                            <input type="tel" id="contactNumber" name="contactNumber" placeholder="0912-345-6789"
+                                class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-slate-700 mb-1">Region V Address</label>
+                            <input type="text" id="address" name="address" placeholder="Legazpi City, Albay"
+                                class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Education & Skills Section -->
-            <div class="mb-8">
-                <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-4">Education & Skills</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="school" class="block text-sm font-medium text-slate-700 mb-1">University / College</label>
-                        <input type="text" id="school" name="school" placeholder="Bicol University"
-                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                <!-- Education & Skills Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-4">Education & Skills</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="school" class="block text-sm font-medium text-slate-700 mb-1">University / College</label>
+                            <input type="text" id="school" name="school" placeholder="Bicol University"
+                                class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
+                        <div>
+                            <label for="course" class="block text-sm font-medium text-slate-700 mb-1">Course / Major</label>
+                            <input type="text" id="course" name="course" placeholder="Bachelor of Science in Computer Science"
+                                class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                        </div>
                     </div>
-                    <div>
-                        <label for="course" class="block text-sm font-medium text-slate-700 mb-1">Course / Major</label>
-                        <input type="text" id="course" name="course" placeholder="Bachelor of Science in Computer Science"
-                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500" />
+                    <div class="mt-6">
+                        <label for="skills" class="block text-sm font-medium text-slate-700 mb-1">Key Skills</label>
+                        <textarea id="skills" name="skills" rows="4" placeholder="e.g., Python, JavaScript, Data Analysis, Graphic Design, Public Speaking"
+                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="mt-2 text-sm text-slate-500">List the skills you have acquired during your studies and projects.</p>
+                    </div>
+                    <div class="mt-6">
+                        <label for="certifications" class="block text-sm font-medium text-slate-700 mb-1">Certifications</label>
+                        <textarea id="certifications" name="certifications" rows="4" placeholder="e.g., Google IT Support Professional Certificate, Microsoft Certified Azure Administrator"
+                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="mt-2 text-sm text-slate-500">List any professional certifications you have obtained.</p>
                     </div>
                 </div>
-                <div class="mt-6">
-                    <label for="skills" class="block text-sm font-medium text-slate-700 mb-1">Key Skills</label>
-                    <textarea id="skills" name="skills" rows="4" placeholder="e.g., Python, JavaScript, Data Analysis, Graphic Design, Public Speaking"
-                        class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    <p class="mt-2 text-sm text-slate-500">List the skills you have acquired during your studies and projects.</p>
-                </div>
-                <div class="mt-6">
-                    <label for="certifications" class="block text-sm font-medium text-slate-700 mb-1">Certifications</label>
-                    <textarea id="certifications" name="certifications" rows="4" placeholder="e.g., Google IT Support Professional Certificate, Microsoft Certified Azure Administrator"
-                        class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    <p class="mt-2 text-sm text-slate-500">List any professional certifications you have obtained.</p>
-                </div>
-            </div>
 
-            <!-- Interests & Career Goals Section -->
-            <div>
-                <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-4">Interests & Goals</h2>
-                <div class="mb-6">
-                    <label for="interests" class="block text-sm font-medium text-slate-700 mb-1">Interests</label>
-                    <textarea id="interests" name="interests" rows="4" placeholder="e.g., Hiking, video games, community volunteering, learning new languages"
-                        class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    <p class="mt-2 text-sm text-slate-500">What are you passionate about? This helps us find culturally aligned opportunities.</p>
-                </div>
+                <!-- Interests & Career Goals Section -->
                 <div>
-                    <label for="careerGoals" class="block text-sm font-medium text-slate-700 mb-1">Career Goals</label>
-                    <textarea id="careerGoals" name="careerGoals" rows="4" placeholder="e.g., Become a Senior Software Engineer in 5 years, work in the field of renewable energy, start my own business"
-                        class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    <p class="mt-2 text-sm text-slate-500">Tell us what you hope to achieve in your career.</p>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-4">Interests & Goals</h2>
+                    <div class="mb-6">
+                        <label for="interests" class="block text-sm font-medium text-slate-700 mb-1">Interests</label>
+                        <textarea id="interests" name="interests" rows="4" placeholder="e.g., Hiking, video games, community volunteering, learning new languages"
+                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="mt-2 text-sm text-slate-500">What are you passionate about? This helps us find culturally aligned opportunities.</p>
+                    </div>
+                    <div>
+                        <label for="careerGoals" class="block text-sm font-medium text-slate-700 mb-1">Career Goals</label>
+                        <textarea id="careerGoals" name="careerGoals" rows="4" placeholder="e.g., Become a Senior Software Engineer in 5 years, work in the field of renewable energy, start my own business"
+                            class="form-input w-full rounded-lg border border-gray-300 p-3 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <p class="mt-2 text-sm text-slate-500">Tell us what you hope to achieve in your career.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Submit Button -->
-            <div class="mt-10">
-                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-lg hover:bg-blue-700 transition transform hover:scale-105 shadow-lg">
-                    Save Profile
-                </button>
-            </div>
-        </form>
+                <!-- Submit Button -->
+                <div class="mt-10">
+                    <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-lg hover:bg-blue-700 transition transform hover:scale-105 shadow-lg">
+                        Save Profile
+                    </button>
+                </div>
+            </form>
+        </div>
     </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('profile-form');
+  const storageKey = 'profileDraft';
+
+  // Populate form from localStorage (if present)
+  const saved = localStorage.getItem(storageKey);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      Object.entries(data).forEach(([k, v]) => {
+        const el = form.querySelector(`[name="${k}"]`);
+        if (!el) return;
+        if (el.type === 'checkbox') {
+          el.checked = v === 'true' || v === true;
+        } else if (el.type === 'radio') {
+          const radio = form.querySelector(`[name="${k}"][value="${v}"]`);
+          if (radio) radio.checked = true;
+        } else {
+          el.value = v;
+        }
+      });
+    } catch (err) {
+      console.error('Failed to parse saved profile:', err);
+    }
+  }
+
+  // Auto-save (debounced) on input/change
+  let saveTimer = null;
+  const doSave = () => {
+    const obj = Object.fromEntries(new FormData(form).entries());
+    localStorage.setItem(storageKey, JSON.stringify(obj));
+  };
+  form.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 300);
+  });
+  form.addEventListener('change', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 300);
+  });
+
+  // Submit: persist locally and attempt server save (if /save_profile exists)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    localStorage.setItem(storageKey, JSON.stringify(data));
+    try {
+      await fetch('/save_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } catch (err) {
+      // server may not exist in prototype — ignore
+    }
+    // redirect to the profile view page (server route that renders profile_view.html)
+    window.location.href = "{{ url_for('profile') }}";
+  });
+
+  // Helper for dev: clear saved draft from console
+  window.clearProfileDraft = () => {
+    localStorage.removeItem(storageKey);
+    form.reset();
+    alert('Local profile cleared.');
+  };
+});
+</script>
 {% endblock %}

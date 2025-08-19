@@ -1,0 +1,121 @@
+/* Small, focused styles to complement Tailwind on the profile view page */
+.profile-card {
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(249,250,251,0.98));
+  padding: 1.25rem;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+.profile-card:hover {
+  box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+  transform: translateY(-2px);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid rgba(99,102,241,0.06);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+.profile-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.profile-sub {
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.section-title {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.info-value {
+  color: #0f172a;
+  line-height: 1.45;
+}
+
+/* small spacing tweak for action row */
+.profile-actions {
+  gap: 0.75rem;
+}
+
+/* Buttons: consistent base + hover/focus interactions */
+.profile-actions .btn,
+.profile-actions a,
+.profile-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Delete (danger) */
+.profile-actions .btn-danger,
+.profile-actions form button {
+  background-color: #fb7185; /* rose-500 */
+  color: #fff;
+}
+.profile-actions .btn-danger:hover,
+.profile-actions form button:hover {
+  background-color: #f43f5e; /* rose-600 */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(244,63,94,0.12);
+}
+.profile-actions .btn-danger:focus,
+.profile-actions form button:focus {
+  outline: 3px solid rgba(244,63,94,0.12);
+  outline-offset: 2px;
+}
+
+/* Edit (primary) */
+.profile-actions .btn-primary,
+.profile-actions a {
+  background-color: #2563eb; /* blue-600 */
+  color: #fff;
+}
+.profile-actions .btn-primary:hover,
+.profile-actions a:hover {
+  background-color: #1e40af; /* blue-700 */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(30,64,175,0.12);
+}
+.profile-actions .btn-primary:focus,
+.profile-actions a:focus {
+  outline: 3px solid rgba(37,99,235,0.12);
+  outline-offset: 2px;
+}
+
+/* Small responsive tweak */
+@media (max-width: 640px) {
+  .profile-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .profile-actions .btn,
+  .profile-actions a,
+  .profile-actions button {
+    width: 100%;
+  }
+}
