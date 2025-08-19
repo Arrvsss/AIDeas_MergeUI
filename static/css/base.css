@@ -1,0 +1,19 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+    transition: all 0.3s;
+}
+
+.active-nav {
+    background-color: #EFF6FF;
+    color: #2563EB;
+    border-left: 4px solid #2563EB;
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.5s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}

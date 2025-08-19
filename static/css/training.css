@@ -1,0 +1,21 @@
+/* Loader + small animations used by Training_UI.html */
+.loader {
+    border-top-color: #3b82f6;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Optional small helpers (kept here to avoid inline rules) */
+.user-profile-xai img {
+    object-fit: cover;
+}

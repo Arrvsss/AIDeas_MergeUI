@@ -3,50 +3,8 @@
 {% block title %}AI Job Matchmaking Interface{% endblock %}
 
 {% block extra_css %}
-<style>
-    /* Add these new styles for the popup */
-    .job-popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-    }
-    .job-popup-overlay.active {
-        opacity: 1;
-        pointer-events: all;
-    }
-    .job-popup {
-        background: white;
-        width: 90%;
-        max-width: 800px;
-        max-height: 90vh;
-        overflow-y: auto;
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        position: relative;
-        padding: 2rem;
-    }
-    .close-popup {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #6b7280;
-    }
-    .job-card {
-        cursor: pointer;
-    }
-</style>
+<!-- load matchmaking page styles from static -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Matchmaking_Ui.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -94,7 +52,7 @@
 
 {% block extra_js %}
 <script>
-    // Your existing mock data and functions remain exactly the same
+    // fallback/mock profile (used only if no local profile found)
     const graduateProfile = {
         name: "Juan Dela Cruz",
         degree: "BS Computer Science",
@@ -193,7 +151,6 @@
     const careerSimulationBtn = document.getElementById('careerSimulationBtn');
     const closePopupButtons = document.querySelectorAll('.close-popup');
 
-    // Your existing helper functions remain the same
     function getScoreColor(score) {
         if (score >= 85) return { text: 'text-emerald-500', bg: 'bg-emerald-100', ring: 'ring-emerald-500' };
         if (score >= 70) return { text: 'text-amber-500', bg: 'bg-amber-100', ring: 'ring-amber-500' };
@@ -209,7 +166,7 @@
     }
 
     // New function to show job popup
-   function showJobPopup(job) {
+    function showJobPopup(job) {
         const scoreColor = getScoreColor(job.matchScore);
         
         jobPopupContent.innerHTML = `
@@ -299,32 +256,36 @@
         jobPopupOverlay.classList.add('active');
     }
 
-    // Close popup function
     function closePopup() {
         jobPopupOverlay.classList.remove('active');
     }
 
-    // Your existing render functions remain the same
     function renderUserProfile(profile) {
+        // normalize profile fields
+        const name = profile.name || profile.fullName || 'Applicant';
+        const degree = profile.degree || profile.course || '';
+        const skillsArr = Array.isArray(profile.skills) ? profile.skills : (profile.skills ? profile.skills.split(/,|\n/).map(s => s.trim()).filter(Boolean) : []);
+        const certsArr = Array.isArray(profile.certifications) ? profile.certifications : (profile.certifications ? profile.certifications.split(/,|\n/).map(s => s.trim()).filter(Boolean) : []);
+
         const profileHTML = `
             <div class="flex items-start justify-between">
                 <div>
-                    <h3 class="text-2xl font-bold text-slate-900">${profile.name}</h3>
-                    <p class="text-slate-600 font-medium">${profile.degree}</p>
+                    <h3 class="text-2xl font-bold text-slate-900">${name}</h3>
+                    <p class="text-slate-600 font-medium">${degree}</p>
                 </div>
-                <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">View Full Profile</a>
+                <a href="{{ url_for('profile') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">View Full Profile</a>
             </div>
             <div class="mt-4 border-t border-slate-200 pt-4 space-y-3">
                 <div>
                     <h4 class="text-sm font-semibold text-slate-800 mb-2">Your Skills</h4>
                     <div class="flex flex-wrap gap-2">
-                        ${profile.skills.map(skill => `<span class="bg-sky-100 text-sky-800 px-2 py-1 rounded-md text-xs font-medium">${skill}</span>`).join('')}
+                        ${skillsArr.length ? skillsArr.map(skill => `<span class="bg-sky-100 text-sky-800 px-2 py-1 rounded-md text-xs font-medium">${skill}</span>`).join('') : '<span class="text-slate-500 text-xs">No skills listed</span>'}
                     </div>
                 </div>
                 <div>
                     <h4 class="text-sm font-semibold text-slate-800 mb-2">Your Certifications</h4>
                     <div class="flex flex-wrap gap-2">
-                         ${profile.certifications.map(cert => `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-medium">${cert}</span>`).join('')}
+                         ${certsArr.length ? certsArr.map(cert => `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-medium">${cert}</span>`).join('') : '<span class="text-slate-500 text-xs">No certifications listed</span>'}
                     </div>
                 </div>
             </div>
@@ -422,9 +383,34 @@
         });
     }
 
+    // Attempt to load profile from localStorage and map to the expected shape
+    function loadLocalProfile() {
+        try {
+            const raw = localStorage.getItem('profileDraft');
+            if (!raw) return null;
+            const saved = JSON.parse(raw);
+            // Map fields from Profile.html form keys to the structure used here
+            const mapped = {
+                fullName: saved.fullName || saved.name || '',
+                name: saved.fullName || saved.name || '',
+                course: saved.course || '',
+                degree: saved.course || saved.degree || '',
+                skills: saved.skills || saved.skillsList || '',
+                certifications: saved.certifications || '',
+                experiences: saved.experiences || ''
+            };
+            return mapped;
+        } catch (e) {
+            console.warn('Failed to parse local profile:', e);
+            return null;
+        }
+    }
+
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', () => {
-        renderUserProfile(graduateProfile);
+        const localProfile = loadLocalProfile();
+        const profileToUse = localProfile || graduateProfile;
+        renderUserProfile(profileToUse);
         renderJobListings(jobOffers);
         
         // Event listeners for popups

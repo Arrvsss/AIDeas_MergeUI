@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_view.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4 max-w-3xl">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-slate-900">My Profile</h1>
+  </header>
+
+  <div class="profile-card bg-white rounded-2xl shadow-lg">
+    <div class="p-6">
+      <div class="flex items-start justify-between">
+        <div class="profile-header">
+          <img src="https://placehold.co/80x80/E2E8F0/4A5568?text=U" alt="User" class="avatar">
+          <div>
+            <h2 class="profile-name">{{ profile.fullName or '—' }}</h2>
+            <p class="text-sm text-slate-600 mt-1">
+              {{ profile.email or '' }}
+              {% if profile.contactNumber %} · {{ profile.contactNumber }}{% endif %}
+            </p>
+            <p class="text-sm text-slate-500 mt-2">{{ profile.address or '' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
+        <div>
+          <div class="section-title">Education</div>
+          <p class="info-value">
+            {{ profile.school or '—' }}<br>
+            <span class="text-slate-500">{{ profile.course or '' }}</span>
+          </p>
+        </div>
+
+        <div>
+          <div class="section-title">Skills</div>
+          <p class="info-value">{{ (profile.skills or '—').replace('\n','<br>')|safe }}</p>
+        </div>
+
+        <div>
+          <div class="section-title">Certifications</div>
+          <p class="info-value">{{ (profile.certifications or '—').replace('\n','<br>')|safe }}</p>
+        </div>
+
+        <div>
+          <div class="section-title">Interests / Goals</div>
+          <p class="info-value">{{ (profile.interests or '—').replace('\n','<br>')|safe }}<br>{{ (profile.careerGoals or '')|escape }}</p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-between items-center profile-actions">
+        <form method="POST" action="{{ url_for('profile_delete') }}" onsubmit="return confirm('Delete saved profile?');">
+          <button type="submit" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600">Delete</button>
+        </form>
+
+        <a href="{{ url_for('profile_edit') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Edit</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const deleteForm = document.querySelector('form[action="{{ url_for('profile_delete') }}"]');
+  if (!deleteForm) return;
+
+  deleteForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!confirm('Delete saved profile?')) return;
+
+    // clear local storage draft
+    try { localStorage.removeItem('profileDraft'); } catch (err) { /* ignore */ }
+
+    // POST to server endpoint (if available) then redirect to edit page
+    try {
+      await fetch(deleteForm.action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    } catch (err) {
+      // server may be absent in prototype — ignore
+    }
+
+    window.location.href = "{{ url_for('profile_edit') }}";
+  });
+
+  // dev helper to clear local draft from console
+  window.clearProfileDraft = () => {
+    try { localStorage.removeItem('profileDraft'); } catch (err) {}
+    alert('Local profile cleared.');
+  };
+});
+</script>
+{% endblock %}
