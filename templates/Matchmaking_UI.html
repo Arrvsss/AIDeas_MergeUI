@@ -80,7 +80,12 @@
                 "Consider getting the AWS Cloud Practitioner certification to stand out.",
                 "Build a personal project using Next.js to gain practical experience."
             ],
-            salaryBoost: "Completing these could boost your eligibility for roles up to ₱55,000."
+            salaryBoost: "Completing these could boost your eligibility for roles up to ₱55,000.",
+
+            percent_reco:  [
+                "Skills completely matched the needed skills for this job",
+                "You exceeded the company's expectations"
+            ]
         },
         {
             id: 2,
@@ -100,7 +105,11 @@
                 "Learn Python for data analysis using libraries like Pandas and NumPy.",
                 "Work towards the Tableau Certified Data Analyst credential to validate your skills."
             ],
-            salaryBoost: "Gaining these skills could increase your match score to over 80%."
+            salaryBoost: "Gaining these skills could increase your match score to over 80%.",
+            percent_reco:  [
+                "Skills completely matched the needed skills for this job",
+                "You exceeded the company's expectations"
+            ]
         },
         {
             id: 3,
@@ -119,7 +128,11 @@
                 "Learn the basics of PHP as it's common in many web agencies.",
                 "Gain experience with WordPress development, a highly in-demand skill.",
             ],
-            salaryBoost: "Adding PHP/WordPress skills can make you a versatile candidate for agency roles."
+            salaryBoost: "Adding PHP/WordPress skills can make you a versatile candidate for agency roles.",
+            percent_reco:  [
+                "Skills completely matched the needed skills for this job",
+                "You exceeded the company's expectations"
+            ]
         },
         {
             id: 4,
@@ -139,10 +152,14 @@
                 "Familiarize yourself with Active Directory user management.",
                 "Review core networking concepts like TCP/IP and DNS."
             ],
-            salaryBoost: "A CompTIA A+ certification can solidify your position as a top candidate."
-        }
-    ];
+            salaryBoost: "A CompTIA A+ certification can solidify your position as a top candidate.",
+            percent_reco:  [
+                "Skills completely matched the needed skills for this job",
+                "You exceeded the company's expectationfsfdsfs"
+            ]
+        },
 
+    ];
     // DOM Elements - add new ones for the popup
     const userProfileContainer = document.getElementById('user-profile-display');
     const jobListingsContainer = document.getElementById('job-listings');
@@ -165,97 +182,111 @@
         }
     }
 
+
     // New function to show job popup
-    function showJobPopup(job) {
-        const scoreColor = getScoreColor(job.matchScore);
-        
-        jobPopupContent.innerHTML = `
-            <div class="space-y-6">
-                <!-- Header with progress indicator -->
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-slate-900 mb-1">${job.title}</h2>
-                    <p class="text-lg text-slate-600">${job.company} • ${job.location}</p>
-                    
-                    <div class="mt-4 flex justify-center">
-                        <div class="relative w-20 h-20">
-                            <svg class="w-full h-full" viewBox="0 0 100 100">
-                                <circle class="text-slate-200" stroke-width="8" stroke="currentColor" fill="transparent" r="36" cx="50" cy="50"/>
-                                <circle class="${scoreColor.text}" stroke-width="8"
-                                    stroke-dasharray="226"
-                                    stroke-dashoffset="${226 - (job.matchScore / 100 * 226)}"
-                                    stroke-linecap="round"
-                                    fill="transparent" r="36" cx="50" cy="50"/>
-                            </svg>
-                            <span class="absolute inset-0 flex items-center justify-center text-xl font-bold ${scoreColor.text}">
-                                ${job.matchScore}%
-                            </span>
-                        </div>
-                    </div>
-                    <p class="mt-2 text-sm ${scoreColor.text} font-medium">Match Score</p>
-                </div>
+function getScoreExplanation(score) {
+    if (score >= 85) {
+        return `Your high match score indicates that your skills and experience are an excellent fit for this role. The AI has identified that you possess all or most of the core requirements, positioning you as a strong candidate.`;
+    } else if (score >= 70) {
+        return `Your solid match score shows that you have many of the skills needed for this job. A little extra training or project work in the identified gap areas could boost your score even higher and make you a top candidate.`;
+    } else {
+        return `This match score suggests that while there is some alignment with your profile, there are significant skill gaps for this role. Focus on the personalized training recommendations to strengthen your profile and improve your chances.`;
+    }
+}
 
-                <!-- Progress Tracker -->
-                <div class="bg-slate-50 p-4 rounded-lg">
-                    <h3 class="font-semibold text-slate-800 mb-3">Your Application Checklist</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center">
-                            <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white mr-3">✓</span>
-                            <div>
-                                <p class="font-medium">Profile Complete</p>
-                                <p class="text-xs text-slate-500">All required sections filled</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-6 h-6 ${job.matchScore > 70 ? 'bg-green-500' : 'bg-yellow-500'} rounded-full flex items-center justify-center text-white mr-3">
-                                ${job.matchScore > 70 ? '✓' : '!'}
-                            </span>
-                            <div>
-                                <p class="font-medium">Skills Match</p>
-                                <p class="text-xs text-slate-500">${job.matchScore > 70 ? 'Meets requirements' : 'Needs improvement'}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-white mr-3">2</span>
-                            <div>
-                                <p class="font-medium">Custom Materials</p>
-                                <p class="text-xs text-slate-500">Resume & cover letter</p>
-                            </div>
-                        </div>
+// Updated function to show the job popup, which now includes the dynamic explanation
+function showJobPopup(job) {
+    const scoreColor = getScoreColor(job.matchScore);
+    const explanationText = getScoreExplanation(job.matchScore);
+    
+    jobPopupContent.innerHTML = `
+        <div class="space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-slate-900 mb-1">${job.title}</h2>
+                <p class="text-lg text-slate-600">${job.company} • ${job.location}</p>
+                
+                <div class="mt-4 flex justify-center">
+                    <div class="relative w-20 h-20">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-slate-200" stroke-width="8" stroke="currentColor" fill="transparent" r="36" cx="50" cy="50"/>
+                            <circle class="${scoreColor.text}" stroke-width="8"
+                                stroke-dasharray="226"
+                                stroke-dashoffset="${226 - (job.matchScore / 100 * 226)}"
+                                stroke-linecap="round"
+                                fill="transparent" r="36" cx="50" cy="50"/>
+                        </svg>
+                        <span class="absolute inset-0 flex items-center justify-center text-xl font-bold ${scoreColor.text}">
+                            ${job.matchScore}%
+                        </span>
                     </div>
                 </div>
+                <p class="mt-2 text-sm ${scoreColor.text} font-medium">Match Score</p>
+            </div>
 
-                <!-- Action Steps -->
-                <div>
-                    <h3 class="font-semibold text-slate-800 mb-2">Next Steps to Apply</h3>
-                    <ul class="list-disc list-inside space-y-2 text-sm text-slate-700 mb-4 pl-2">
-                        <li><strong>Update your resume</strong> to highlight ${job.reasoning.matchedSkills.slice(0,2).join(' and ')} experience</li>
-                        <li><strong>Prepare examples</strong> of your work with ${job.reasoning.matchedSkills[0]}</li>
-                        ${job.reasoning.missingSkills.length > 0 ? 
-                            `<li><strong>Address gaps</strong> by mentioning your ${job.reasoning.missingSkills[0]} learning plan</li>` : ''
-                        }
-                        <li><strong>Research</strong> ${job.company}'s recent projects</li>
-                    </ul>
-                </div>
-
-                <!-- Quick Actions -->
+            <div class="bg-slate-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-slate-800 mb-3">Percentage Explanation</h3>
+                <p class="text-sm text-slate-700">${explanationText}</p>
+            </div>
+         
+            
+            <div class="bg-slate-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-slate-800 mb-3">Your Application Checklist</h3>
                 <div class="space-y-3">
-                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-                        Apply Now
-                    </button>
-                    <button class="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition">
-                        Save for Later
-                    </button>
-                    <a href="/training" class="block text-center text-sm text-blue-600 hover:text-blue-800 mt-2">
-                        Find training to improve your match
-                    </a>
+                    <div class="flex items-center">
+                        <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white mr-3">✓</span>
+                        <div>
+                            <p class="font-medium">Profile Complete</p>
+                            <p class="text-xs text-slate-500">All required sections filled</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-6 h-6 ${job.matchScore > 70 ? 'bg-green-500' : 'bg-yellow-500'} rounded-full flex items-center justify-center text-white mr-3">
+                            ${job.matchScore > 70 ? '✓' : '!'}
+                        </span>
+                        <div>
+                            <p class="font-medium">Skills Match</p>
+                            <p class="text-xs text-slate-500">${job.matchScore > 70 ? 'Meets requirements' : 'Needs improvement'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-white mr-3">2</span>
+                        <div>
+                            <p class="font-medium">Custom Materials</p>
+                            <p class="text-xs text-slate-500">Resume & cover letter</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        `;
-        
-        careerSimulationBtn.href = `/simulator?role=${encodeURIComponent(job.title)}&company=${encodeURIComponent(job.company)}&salary=${encodeURIComponent(job.salaryRange)}`;
-        jobPopupOverlay.classList.add('active');
-    }
 
+            <div>
+                <h3 class="font-semibold text-slate-800 mb-2">Next Steps to Apply</h3>
+                <ul class="list-disc list-inside space-y-2 text-sm text-slate-700 mb-4 pl-2">
+                    <li><strong>Update your resume</strong> to highlight ${job.reasoning.matchedSkills.slice(0,2).join(' and ')} experience</li>
+                    <li><strong>Prepare examples</strong> of your work with ${job.reasoning.matchedSkills[0]}</li>
+                    ${job.reasoning.missingSkills.length > 0 ? 
+                        `<li><strong>Address gaps</strong> by mentioning your ${job.reasoning.missingSkills[0]} learning plan</li>` : ''
+                    }
+                    <li><strong>Research</strong> ${job.company}'s recent projects</li>
+                </ul>
+            </div>
+
+            <div class="space-y-3">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Apply Now
+                </button>
+                <button class="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition">
+                    Save for Later
+                </button>
+                <a href="/training" class="block text-center text-sm text-blue-600 hover:text-blue-800 mt-2">
+                    Find training to improve your match
+                </a>
+            </div>
+        </div>
+    `;
+    
+    careerSimulationBtn.href = `/simulator?role=${encodeURIComponent(job.title)}&company=${encodeURIComponent(job.company)}&salary=${encodeURIComponent(job.salaryRange)}`;
+    jobPopupOverlay.classList.add('active');
+}
     function closePopup() {
         jobPopupOverlay.classList.remove('active');
     }
