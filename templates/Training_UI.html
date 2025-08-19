@@ -10,7 +10,6 @@
 {% block content %}
 <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
     <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-        <!-- User Profile & XAI Section -->
         <div id="user-profile-xai" class="mb-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
             <div class="flex items-start sm:items-center space-x-4">
                 <img id="training-user-avatar" src="https://placehold.co/80x80/E2E8F0/4A5568?text=User" alt="User Profile" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/80x80/E2E8F0/4A5568?text=U';">
@@ -33,19 +32,35 @@
             </div>
         </div>
 
-        <!-- Loading Spinner -->
         <div id="loader" class="mt-8 flex items-center justify-center">
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
         </div>
 
-        <!-- Training Programs Section -->
         <div id="training-container" class="mt-8 hidden">
              <h2 class="text-2xl font-bold text-slate-900 mb-4">Recommended For You</h2>
             <div id="training-list" class="space-y-4">
-                <!-- Training programs will be injected here -->
-            </div>
+                </div>
         </div>
+            <a id="careerSimulationBtn" href="/matchmaking" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition text-center block">
+                Back
+            </a>
     </main>
+</div>
+
+<div id="trainingPopupOverlay" class="training-popup-overlay">
+    <div class="training-popup">
+        <span class="close-popup">&times;</span>
+        <div id="trainingPopupContent" class="space-y-4">
+            </div>
+        <div class="mt-6 flex flex-col sm:flex-row gap-4">
+            <a id="enrollBtn" href="#" target="_blank" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                Enroll Now
+            </a>
+            <button id="saveForLaterBtn" class="flex-1 border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-2 px-4 rounded-lg transition">
+                Save for Later
+            </button>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -65,6 +80,10 @@
         const groupEl = document.getElementById('training-user-group');
         const avatarEl = document.getElementById('training-user-avatar');
 
+        const trainingPopupOverlay = document.getElementById('trainingPopupOverlay');
+        const trainingPopupContent = document.getElementById('trainingPopupContent');
+        const closePopupButtons = document.querySelectorAll('.close-popup');
+
         // fallback/mock profile (used when no local profile found)
         const fallbackProfile = {
             fullName: "Juan Dela Cruz",
@@ -80,25 +99,41 @@
                 "program_name": "Full-Stack Web Development NC III",
                 "description": "A comprehensive TESDA program covering both front-end and back-end technologies to build complete web applications. Aligns with your goal to become a full-stack developer.",
                 "provider": "TESDA",
-                "link": "#"
+                "link": "https://e-tesda.gov.ph/",
+                "details": ["HTML/CSS/JS mastery", "Server-side scripting", "Database management", "Full project lifecycle"],
+                "duration": "280 hours",
+                "requirements": "High school diploma or ALS certificate",
+                "certification": "TESDA National Certificate III"
             },
             {
                 "program_name": "Python for Data Science",
                 "description": "This course from DICT focuses on Python's data analysis libraries (like Pandas and NumPy), leveraging your existing Python and Data Analysis skills for a high-demand field.",
                 "provider": "DICT - DigitalJobsPH",
-                "link": "#"
+                "link": "https://governmentph.com/digitaljobsph-dict/",
+                "details": ["Data manipulation with Pandas", "Data visualization", "Machine learning basics", "Statistical analysis"],
+                "duration": "40 hours",
+                "requirements": "Basic Python knowledge",
+                "certification": "Certificate of Completion"
             },
             {
                 "program_name": "Advanced JavaScript for Remote Work",
                 "description": "Deepen your JavaScript knowledge with modern frameworks (like React or Vue) essential for remote development roles, matching your interest in freelancing and remote work.",
                 "provider": "Coursera",
-                "link": "#"
+                "link": "https://www.coursera.org/?msockid=15cc3b7ea72463880a932d5da6306295",
+                "details": ["Asynchronous programming", "Modern JS frameworks (React)", "State management", "API integration"],
+                "duration": "6-8 weeks",
+                "requirements": "Intermediate JavaScript knowledge",
+                "certification": "Coursera Professional Certificate"
             },
             {
                 "program_name": "UI/UX Design for Developers",
                 "description": "Leverage your Graphic Design skill to improve your web development projects. This course teaches design principles from a developer's perspective.",
-                "provider": "Udemy",
-                "link": "#"
+                "provider": "https://www.udemy.com/",
+                "link": "#",
+                "details": ["User research basics", "Wireframing & prototyping", "Usability testing", "Design principles for developers"],
+                "duration": "15 hours (self-paced)",
+                "requirements": "None",
+                "certification": "Udemy Certificate of Completion"
             }
         ];
 
@@ -153,15 +188,13 @@
             if (Array.isArray(recommendedPrograms) && recommendedPrograms.length > 0) {
                 recommendedPrograms.forEach(program => {
                     const card = document.createElement('div');
-                    card.className = 'bg-slate-100 p-4 rounded-lg shadow-sm transition-transform transform hover:scale-[1.02]';
+                    card.className = 'bg-slate-100 p-4 rounded-lg shadow-sm transition-transform transform hover:scale-[1.02] cursor-pointer training-card';
                     card.innerHTML = `
                         <h3 class="font-semibold text-lg text-slate-900">${program.program_name}</h3>
                         <p class="mt-1 text-sm text-slate-500">Provider: ${program.provider}</p>
                         <p class="mt-2 text-slate-700">${program.description}</p>
-                        <a href="${program.link}" target="_blank" class="mt-3 inline-block text-blue-600 hover:text-blue-800 font-semibold transition-colors">
-                            Learn More &rarr;
-                        </a>
                     `;
+                    card.addEventListener('click', () => showTrainingPopup(program));
                     trainingList.appendChild(card);
                 });
                 trainingContainer.classList.remove('hidden');
@@ -172,10 +205,64 @@
             loader.classList.add('hidden');
         }
 
+        function showTrainingPopup(program) {
+            const detailsList = program.details.map(item => `<li class="text-slate-700">${item}</li>`).join('');
+
+            trainingPopupContent.innerHTML = `
+                <h3 class="text-2xl font-bold text-slate-900 mb-2">${program.program_name}</h3>
+                <p class="text-sm text-slate-600 mb-4">Provider: <span class="font-medium text-slate-800">${program.provider}</span></p>
+                <p class="text-slate-700">${program.description}</p>
+
+                <div class="mt-4 border-t border-slate-200 pt-4">
+                    <h4 class="font-semibold text-slate-900 mb-2">What you'll learn:</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        ${detailsList}
+                    </ul>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm text-slate-600">
+                    <div>
+                        <span class="font-semibold text-slate-900">Duration:</span>
+                        <p>${program.duration}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-slate-900">Requirements:</span>
+                        <p>${program.requirements}</p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="font-semibold text-slate-900">Certification:</span>
+                        <p>${program.certification}</p>
+                    </div>
+                </div>
+            `;
+            
+            const enrollBtn = document.getElementById('enrollBtn');
+            if (enrollBtn) {
+                enrollBtn.href = program.link;
+            }
+
+            trainingPopupOverlay.classList.add('active');
+        }
+
+        function closePopup() {
+            trainingPopupOverlay.classList.remove('active');
+        }
+
         // Initialize display using local profile if present
         const savedProfile = loadLocalProfile();
         const profile = normalizeProfile(savedProfile);
         displayTrainingPrograms(profile);
+
+        // Event listeners for popups
+        closePopupButtons.forEach(btn => {
+            btn.addEventListener('click', closePopup);
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === trainingPopupOverlay) {
+                closePopup();
+            }
+        });
     });
 </script>
 {% endblock %}
