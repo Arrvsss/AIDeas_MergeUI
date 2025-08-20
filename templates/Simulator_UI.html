@@ -63,18 +63,16 @@
 
 {% block content %}
 <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-6xl">
-    <!-- Header -->
     <header class="text-center mb-8">
         <h1 class="text-3xl md:text-4xl font-bold text-slate-900">
             Career Simulator
         </h1>
         <p class="mt-2 text-slate-600">
-            Visualize your 20-year career trajectory in the Philippines.
+            Visualize your 20-year career trajectory as <strong>Frontend Developer</strong>.
         </p>
     </header>
 
     <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-        <!-- Data Display -->
         <div id="data-display" class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-10 text-center">
             <div data-metric="salary" class="metric-card bg-blue-50 p-5 rounded-xl border border-blue-200 cursor-pointer hover:shadow-md hover:border-blue-400 transition metric-transition">
                 <h3 class="text-sm font-semibold text-blue-800 uppercase tracking-wider">
@@ -102,7 +100,6 @@
             </div>
         </div>
 
-        <!-- Timeline Selector -->
         <div class="relative pt-10 pb-12">
             <div id="timeline-container" class="timeline-container">
                 <div id="forecasting-icon" class="forecasting-icon">
@@ -113,7 +110,6 @@
             </div>
         </div>
 
-        <!-- Career Details -->
         <div class="mt-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
             <h3 class="text-lg font-semibold text-slate-900 mb-4">
                 Career Snapshot at <span id="year-label">Year 1</span>
@@ -154,12 +150,9 @@
     </main>
 </div>
 
-<!-- Explanation Modal -->
 <div id="metric-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <!-- Overlay -->
     <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 modal-overlay"></div>
 
-    <!-- Panel -->
     <div id="modal-panel" class="relative bg-white w-full max-w-lg mx-auto rounded-2xl shadow-xl modal-panel">
         <div class="p-6">
             <div class="flex justify-between items-start mb-4">
@@ -174,6 +167,34 @@
             </div>
             <div id="modal-explanation" class="text-slate-700 leading-relaxed">
                 Explanation text will be loaded here.
+            </div>
+
+            <div id="modal-performance-breakdown" class="mt-4 pt-4 border-t border-slate-200 hidden">
+                <h4 class="text-md font-semibold text-slate-800 mb-2">Performance Breakdown</h4>
+                <p id="breakdown-summary" class="text-slate-600 mb-3"></p>
+                <ul id="breakdown-metrics-list" class="list-disc list-inside text-slate-600 space-y-1 pl-4"></ul>
+            </div>
+
+            <div id="modal-wellBeing-breakdown" class="mt-4 pt-4 border-t border-slate-200 hidden">
+                <h4 class="text-md font-semibold text-slate-800 mb-2">Well-being Breakdown</h4>
+                <p id="wellbeing-breakdown-summary" class="text-slate-600 mb-3"></p>
+                <ul id="wellbeing-breakdown-metrics-list" class="list-disc list-inside text-slate-600 space-y-1 pl-4"></ul>
+            </div>
+            
+            <div id="modal-salary-breakdown" class="mt-4 pt-4 border-t border-slate-200">
+                <h4 class="text-md font-semibold text-slate-800 mb-2">Salary Breakdown</h4>
+                <p>
+                    <span class="font-medium text-slate-700">Job Title:</span>
+                    <span id="breakdown-job-title" class="text-slate-600"></span>
+                </p>
+                <p>
+                    <span class="font-medium text-slate-700">Location:</span>
+                    <span id="breakdown-location" class="text-slate-600"></span>
+                </p>
+                <h5 class="font-medium text-slate-700 mt-3 mb-1">Key Skills:</h5>
+                <ul id="breakdown-skills-list" class="list-disc list-inside text-slate-600 space-y-1 pl-4"></ul>
+                <h5 class="font-medium text-slate-700 mt-3 mb-1">Key Certifications:</h5>
+                <ul id="breakdown-certs-list" class="list-disc list-inside text-slate-600 space-y-1 pl-4"></ul>
             </div>
         </div>
     </div>
@@ -202,9 +223,32 @@
                     "Imposter syndrome is normal.",
                     "Read documentation.",
                 ],
-                salaryExplanation: "Considering your proficiency in JavaScript, React, HTML, CSS, Git, and your certification in Google IT Support, you've demonstrated both the essential front-end skills and a solid foundation in IT fundamentals. This combination strengthens your readiness for an entry‑level developer role, where first‑year developer salaries commonly range from ₱25,000 to ₱30,000 per month",
+                salaryExplanation: "Considering your proficiency in JavaScript, React, HTML, CSS, and Git, and your certification in Google IT Support, you've demonstrated both the essential front-end skills and a solid foundation in IT fundamentals. This combination strengthens your readiness for an entry‑level developer role, where first‑year developer salaries commonly range from ₱25,000 to ₱30,000 per month",
                 performanceExplanation: "At this stage, your performance centers on learning and applying foundational skills. You're building essential knowledge and demonstrating initiative through certifications. While you haven’t yet led projects or acquired advanced skills, your steady progress sets the stage for future growth.",
                 wellBeingExplanation: "At the start of your career, your well-being reflects the typical adjustment period in a demanding tech environment. Entry-level roles often come with a moderate salary that matches the local cost of living but also include a steep learning curve. While benefits may be limited at this stage, the excitement of new challenges balances the natural stress of onboarding and adapting to fast-paced workflows.",
+                salaryBreakdown: {
+                    jobTitle: "Entry-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git"],
+                    certifications: ["Google IT Support Professional Certificate"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 65, comment: "Your progress toward promotion is on track, showing solid foundation." },
+                        { name: "High Impact Skills (35%)", score: 70, comment: "Demonstrating proficiency in essential technologies." },
+                        { name: "Leadership Keywords (20%)", score: 60, comment: "Exhibiting early signs of leadership potential." },
+                        { name: "Certifications (15%)", score: 80, comment: "Your certifications provide a strong initial boost." }
+                    ],
+                    summary: "Your performance score is 70%, reflecting a strong start with a focus on foundational skills and certifications."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 70, comment: "Your starting salary of ₱30,000 is higher than the average monthly family income in the Philippines, providing a solid foundation." },
+                        { name: "Work-Life Balance (30%)", score: 60, comment: "New role brings a steep learning curve, but responsibilities are manageable." },
+                        { name: "Health & Security (20%)", score: 60, comment: "Basic benefits are provided, and job security is reasonable at this stage." }
+                    ],
+                    summary: "Your well-being score is 65%, reflecting a strong start with a focus on foundational skills and certifications."
+                }
             },
         },
         {
@@ -225,9 +269,32 @@
                     "Solidify core data structure knowledge.",
                     "Your speed and quality are improving.",
                 ],
-                salaryExplanation: "Considering your continued experience with JavaScript, React, HTML, CSS, and Git, and your progress over the past year, your role now carries more responsibility and technical depth. You’ve likely contributed to real-world projects, improved your development workflow, and built stronger problem-solving skills. A salary of ₱40,000 reflects your growing expertise and aligns with typical compensation for developers with 1–2 years of experience in the Philippines.",
+                salaryExplanation: "Considering your continued experience with JavaScript, React, HTML, CSS, and Git, and your progress over the past year, your role now carries more responsibility and technical depth. You’ve likely contributed to real-world projects, improved your development workflow, and built stronger problem-solving skills. A salary of ₱40,000 reflects your growing expertise and aligns with typical compensation for developers with 1–2 years of experience in the Quezon City, Philippines.",
                 performanceExplanation: "Your performance reflects increasing competence and independence. You’re contributing more meaningfully to projects and may have started gaining some high-impact skills or additional certifications. However, leadership and project management opportunities remain limited at this stage.",
                 wellBeingExplanation: "A slight dip to 64% is common as initial excitement wears off and the reality of daily responsibilities sets in. Managing workload is a new challenge.",
+                salaryBreakdown: {
+                    jobTitle: "Entry-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Unit Testing"],
+                    certifications: ["Google IT Support Professional Certificate"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 68, comment: "Your progress is steady, showing readiness for more responsibility." },
+                        { name: "High Impact Skills (35%)", score: 75, comment: "Improving your skills in unit testing and problem-solving." },
+                        { name: "Leadership Keywords (20%)", score: 62, comment: "Contributing to code reviews and showing early signs of leadership." },
+                        { name: "Certifications (15%)", score: 78, comment: "Continued value from your foundational certification." }
+                    ],
+                    summary: "Your performance score is 72%, reflecting increasing independence and skill acquisition."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 75, comment: "Your salary increase provides more financial security, improving this metric." },
+                        { name: "Work-Life Balance (30%)", score: 55, comment: "Increased responsibilities and a heavier workload can cause a slight decrease in your work-life balance." },
+                        { name: "Health & Security (20%)", score: 60, comment: "Job security remains steady, with consistent health benefits." }
+                    ],
+                    summary: "Your well-being score is 64%, reflecting a slight dip as you adjust to increased responsibilities."
+                }
             },
         },
         {
@@ -248,9 +315,32 @@
                     "Communication skills are more important.",
                     "Be proactive in seeking feedback.",
                 ],
-                salaryExplanation: "Even as an entry-level developer in your third year, your accumulated experience adds value—through deeper familiarity with tools, better code quality, and improved efficiency. While your role may not have formally advanced, your continued contributions justify a salary increase nearing ₱50,000, in line with the upper range for entry-level developers in the Philippines with multiple years of experience.",
-                performanceExplanation: "As a reliable team member, your performance improves with deeper expertise and greater efficiency. You’re likely developing more advanced skills and taking on more complex tasks, but you’re still within an entry-level role without significant leadership responsibilities. Continued skill acquisition and certification reinforce your upward trajectory.",
+                salaryExplanation: "Even as an entry-level developer in your third year, your accumulated experience adds value—through deeper familiarity with tools, better code quality, and improved efficiency. While your role may not have formally advanced, your continued contributions justify a salary increase nearing ₱50,000, in line with the upper range for entry-level developers in the Quezon City, Philippines with multiple years of experience.",
+                performanceExplanation: "Your performance improves with deeper expertise and greater efficiency. You’re likely developing more advanced skills and taking on more complex tasks, but you’re still within an entry-level role without significant leadership responsibilities. Continued skill acquisition and certification reinforce your upward trajectory.",
                 wellBeingExplanation: "Well-being dips to 62% as you take on more responsibility, which can increase stress. You might feel the pressure to perform at a mid-level standard.",
+                salaryBreakdown: {
+                    jobTitle: "Entry-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Node.js", "SQL"],
+                    certifications: ["Google IT Support Professional Certificate"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 71, comment: "Your consistent performance is paving the way for a promotion." },
+                        { name: "High Impact Skills (35%)", score: 78, comment: "Deepening your knowledge in areas like Node.js and SQL." },
+                        { name: "Leadership Keywords (20%)", score: 65, comment: "Starting to show initiative in mentoring and problem-solving." },
+                        { name: "Certifications (15%)", score: 75, comment: "Continued value from your professional certification." }
+                    ],
+                    summary: "Your performance score is 74%, reflecting increased reliability and a deepening of technical skills."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 80, comment: "Continued salary growth provides a better financial cushion." },
+                        { name: "Work-Life Balance (30%)", score: 50, comment: "Pressure to perform at a higher level causes a dip in work-life balance." },
+                        { name: "Health & Security (20%)", score: 60, comment: "Health benefits and job security remain consistent." }
+                    ],
+                    summary: "Your well-being score is 62%, reflecting the stress of transitioning to a mid-level standard."
+                }
             },
         },
         {
@@ -274,6 +364,29 @@
                 salaryExplanation: "Your current salary of ₱56,250 is a result of your growing skill set and consistent performance over the past four years. The AI's projection considers your technical maturity, acquisition of advanced skills, and ability to contribute at a higher level than a typical entry-level developer. This compensation places you near the upper range for your level and signals readiness for a mid-level role in the near future.",
                 performanceExplanation: "Your performance has steadily improved, driven by your ability to handle more complex tasks and contribute more independently to your team. You're beginning to show early signs of leadership and ownership — such as mentoring peers or improving internal tools — which indicate you're nearing a mid-level threshold. This progression reflects a strong upward trend in your development speed compared to the average entry-level timeline.",
                 wellBeingExplanation: "By year five, your well-being improves as your salary growth better aligns with your living expenses, enhancing financial stability. Although industry turnover rates in tech remain moderate, your expanding skill set and job security contribute positively. However, emerging leadership responsibilities may slightly reduce your work-life balance, which is normal as you take on more complex tasks and greater accountability.",
+                salaryBreakdown: {
+                    jobTitle: "Entry-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "API Integration", "System Design"],
+                    certifications: ["Google IT Support Professional Certificate"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 78, comment: "You are on the cusp of a promotion, showing strong readiness for the next level." },
+                        { name: "High Impact Skills (35%)", score: 82, comment: "Acquiring skills in API Integration and System Design." },
+                        { name: "Leadership Keywords (20%)", score: 68, comment: "Demonstrating ownership and initiative by improving code." },
+                        { name: "Certifications (15%)", score: 75, comment: "Your foundational certification remains valuable." }
+                    ],
+                    summary: "Your performance score is 76%, reflecting a transitional stage with strong signs of readiness for a mid-level role."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 85, comment: "A solid salary increase enhances financial stability." },
+                        { name: "Work-Life Balance (30%)", score: 50, comment: "You are taking on more accountability and responsibilities, which impacts work-life balance." },
+                        { name: "Health & Security (20%)", score: 65, comment: "Your expanded skill set and consistent performance improve job security." }
+                    ],
+                    summary: "Your well-being score is 61%, reflecting the challenges and opportunities of a transition period."
+                }
             },
         },
         {
@@ -297,6 +410,29 @@
                 salaryExplanation: "Your salary increases to approximately ₱65,000. This jump is a direct result of your proven ability to work independently. Companies are willing to pay a premium for mid-level developers because they add significant value without requiring constant management overhead.",
                 performanceExplanation: "Your performance metrics have shifted from a junior-level focus on task completion to a mid-level focus on independent feature ownership. You are now expected to take on a full feature, from initial design to deployment, with minimal supervision. Your performance is judged on your ability to deliver working, well-documented, and maintainable code that integrates smoothly into the existing system.",
                 wellBeingExplanation: "Well-being hits a low of 60%. The leap in responsibility is significant, and the pressure to perform without direct supervision can be intense. This is a critical burnout risk period.",
+                salaryBreakdown: {
+                    jobTitle: "Mid-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Redux", "RESTful APIs", "Databases"],
+                    certifications: ["AWS Certified Cloud Practitioner"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 75, comment: "You have achieved a promotion, marking a significant milestone." },
+                        { name: "High Impact Skills (35%)", score: 85, comment: "Mastering Redux and RESTful APIs for independent feature ownership." },
+                        { name: "Leadership Keywords (20%)", score: 70, comment: "Taking on full feature responsibility with minimal supervision." },
+                        { name: "Certifications (15%)", score: 78, comment: "New certification in AWS demonstrates commitment to high-impact skills." }
+                    ],
+                    summary: "Your performance score is 78%, reflecting a strong transition to a mid-level role."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 80, comment: "Your salary increase provides a better financial cushion." },
+                        { name: "Work-Life Balance (30%)", score: 45, comment: "The significant leap in responsibility leads to a dip in work-life balance." },
+                        { name: "Health & Security (20%)", score: 70, comment: "More comprehensive health benefits and improved job security." }
+                    ],
+                    summary: "Your well-being score is 60%, reflecting the challenges and stress of a new, more demanding role."
+                }
             },
         },
         {
@@ -320,6 +456,29 @@
                 salaryExplanation: "A projected salary of ₱70,000–₱75,000 recognizes your evolution into a core team contributor. This range aligns with mid-level developers who have around 5–6 years of experience and are able to balance technical depth with cross-functional collaboration.",
                 performanceExplanation: "At this stage, you consistently deliver production-ready code, take initiative in team discussions, and may lead smaller projects or components. Your performance reflects autonomy, code quality, and the application of high-impact skills — all benchmarks of a fully mid-level developer.",
                 wellBeingExplanation: "Well-being starts to recover to 62%. You are becoming more comfortable with your responsibilities, and confidence replaces the initial stress of the new role.",
+                salaryBreakdown: {
+                    jobTitle: "Mid-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Redux", "RESTful APIs", "SQL", "CI/CD"],
+                    certifications: ["AWS Certified Cloud Practitioner"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 77, comment: "You are continuing to grow within your current role." },
+                        { name: "High Impact Skills (35%)", score: 85, comment: "Proficient in your domain and exploring CI/CD." },
+                        { name: "Leadership Keywords (20%)", score: 72, comment: "Taking initiative in team discussions and leading small projects." },
+                        { name: "Certifications (15%)", score: 75, comment: "Your certification continues to be a valuable asset." }
+                    ],
+                    summary: "Your performance score is 79%, reflecting proficiency and growing influence within the team."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 85, comment: "Your salary growth provides a strong financial cushion." },
+                        { name: "Work-Life Balance (30%)", score: 55, comment: "You are becoming more comfortable with your responsibilities, improving work-life balance." },
+                        { name: "Health & Security (20%)", score: 70, comment: "Health benefits and job security remain consistent and reliable." }
+                    ],
+                    summary: "Your well-being score is 62%, reflecting a period of recovery and growing comfort in your role."
+                }
             },
         },
         {
@@ -343,6 +502,29 @@
                 salaryExplanation: "With continued growth, your compensation could reach ₱80,000–₱85,000, factoring in both your years of experience and increasing leadership value within the team. Developers in this phase often begin preparing for senior or lead roles.",
                 performanceExplanation: "You’re now a go-to person for resolving technical issues, optimizing systems, and mentoring others. Your performance is marked by consistent ownership of outcomes, improved architectural thinking, and leadership in peer reviews or sprint planning.",
                 wellBeingExplanation: "Well-being improves to 64% as mastery increases. Job satisfaction comes from seeing your designs implemented and your mentees succeed.",
+                salaryBreakdown: {
+                    jobTitle: "Mid-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Redux", "RESTful APIs", "Cloud Services", "Microservices"],
+                    certifications: ["AWS Certified Solutions Architect – Associate"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 80, comment: "Consistently delivering high-quality work, nearing senior level." },
+                        { name: "High Impact Skills (35%)", score: 85, comment: "Actively involved in designing systems and microservices." },
+                        { name: "Leadership Keywords (20%)", score: 78, comment: "Mentoring junior developers and taking on leadership roles." },
+                        { name: "Certifications (15%)", score: 85, comment: "Your new certification in AWS demonstrates advanced expertise." }
+                    ],
+                    summary: "Your performance score is 81%, reflecting your increasing expertise and leadership."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 88, comment: "Continued salary growth provides even greater financial comfort." },
+                        { name: "Work-Life Balance (30%)", score: 58, comment: "New leadership responsibilities are challenging but also intellectually stimulating." },
+                        { name: "Health & Security (20%)", score: 75, comment: "Your advanced skills and new certification significantly increase job security." }
+                    ],
+                    summary: "Your well-being score is 64%, reflecting increased mastery and satisfaction in your work."
+                }
             },
         },
         {
@@ -366,6 +548,29 @@
                 salaryExplanation: "Salaries at this stage typically reach ₱90,000–₱95,000, driven by your accumulated experience, specialized skills (e.g., DevOps, Cloud, Security), and influence on product outcomes.",
                 performanceExplanation: "Your contributions now span technical execution and team influence. You're likely involved in system-level decisions and guide best practices. These are signs of performance exceeding standard mid-level expectations.",
                 wellBeingExplanation: "At 66%, you're finding a better rhythm. You are confident in your skills and are less stressed by ambiguity, leading to a healthier work-life balance.",
+                salaryBreakdown: {
+                    jobTitle: "Mid-Level Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Cloud Services", "DevOps", "CI/CD"],
+                    certifications: ["AWS Certified Solutions Architect – Associate"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 83, comment: "You are operating at a high level of independence." },
+                        { name: "High Impact Skills (35%)", score: 88, comment: "Involved in system-level decisions and DevOps practices." },
+                        { name: "Leadership Keywords (20%)", score: 80, comment: "Taking the lead on cross-team initiatives." },
+                        { name: "Certifications (15%)", score: 80, comment: "Your certification supports your strategic work." }
+                    ],
+                    summary: "Your performance score is 82%, reflecting contributions that span technical execution and team influence."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 90, comment: "Your salary increase provides excellent financial security." },
+                        { name: "Work-Life Balance (30%)", score: 60, comment: "Your increased confidence and autonomy lead to a healthier work-life balance." },
+                        { name: "Health & Security (20%)", score: 75, comment: "Your strategic contributions and high level of expertise improve job security." }
+                    ],
+                    summary: "Your well-being score is 66%, reflecting a better rhythm and growing confidence in your role."
+                }
             },
         },
         {
@@ -389,6 +594,29 @@
                 salaryExplanation: "Predicted compensation rises to around ₱100,000–₱110,000, based on your strategic impact and technical depth. This reflects local benchmarks for highly experienced engineers preparing for senior roles.",
                 performanceExplanation: "You consistently exhibit senior-level behavior — managing complex projects, influencing architecture, and mentoring junior to mid-level developers. Your performance indicates that you could soon transition to a formal senior engineering title.",
                 wellBeingExplanation: "Well-being rises to 68% with the confidence that comes from operating at a higher level. You feel valued and see a clear path for advancement.",
+                salaryBreakdown: {
+                    jobTitle: "Senior Developer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "System Architecture", "Leadership", "Technical Planning"],
+                    certifications: ["AWS Certified Solutions Architect – Associate", "Certified ScrumMaster"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 88, comment: "You are exhibiting consistent senior-level behavior." },
+                        { name: "High Impact Skills (35%)", score: 88, comment: "Influencing architectural decisions and technical planning." },
+                        { name: "Leadership Keywords (20%)", score: 85, comment: "Acting as a technical lead and mentoring other developers." },
+                        { name: "Certifications (15%)", score: 80, comment: "Your certifications support your readiness for a senior role." }
+                    ],
+                    summary: "Your performance score is 84%, reflecting a strong trajectory towards a senior role."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 92, comment: "Crossing the ₱100,000 mark provides exceptional financial security." },
+                        { name: "Work-Life Balance (30%)", score: 62, comment: "The pressure of a transitional role is balanced by increased autonomy." },
+                        { name: "Health & Security (20%)", score: 78, comment: "Your leadership and impact make you a valuable asset, increasing job security." }
+                    ],
+                    summary: "Your well-being score is 68%, reflecting the confidence and value you feel as you approach a senior role."
+                }
             },
         },
         {
@@ -409,9 +637,32 @@
                     "You are a team multiplier.",
                     "Stay updated with industry trends.",
                 ],
-                salaryExplanation: "Considering your accumulated experience in front-end technologies such as JavaScript, React, HTML, CSS, and Git—along with your long-term contributions to production systems and team projects—your salary has grown in line with mid- to senior-level roles in the Philippines. At this stage, your compensation reflects your ability to work independently, make architectural decisions, and improve team velocity through technical mentoring and code quality.",
+                salaryExplanation: "Considering your accumulated experience in front-end technologies such as JavaScript, React, HTML, CSS, and Git—along with your long-term contributions to production systems and team projects—your salary has grown in line with mid- to senior-level roles in the Quezon City, Philippines. At this stage, your compensation reflects your ability to work independently, make architectural decisions, and improve team velocity through technical mentoring and code quality.",
                 performanceExplanation: "Your performance rating is based on steady progression over the last decade. You’ve consistently taken on higher-complexity projects, contributed to cross-functional planning, and delivered value beyond implementation. Earning respected certifications and taking initiative in project leadership reflect the high-performance markers used in this model.",
                 wellBeingExplanation: "At this mid-career point, your well-being benefits from a stronger salary relative to your local cost of living and access to additional benefits such as healthcare and flexible work options. While increased responsibility and leadership roles might introduce new stresses, your accumulated experience and ability to manage workload lead to better balance. Industry turnover rates are low for senior roles, contributing to a stable work environment.",
+                salaryBreakdown: {
+                    jobTitle: "Senior Engineer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "HTML", "CSS", "Git", "Software Architecture", "Mentorship", "Project Management"],
+                    certifications: ["AWS Certified Solutions Architect – Associate", "Certified ScrumMaster"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 85, comment: "You have achieved a senior role, marking a major milestone." },
+                        { name: "High Impact Skills (35%)", score: 88, comment: "Now responsible for software architecture and project management." },
+                        { name: "Leadership Keywords (20%)", score: 85, comment: "You are a technical leader responsible for mentoring and architecture." },
+                        { name: "Certifications (15%)", score: 80, comment: "Your certifications support your new level of responsibility." }
+                    ],
+                    summary: "Your performance score is 85%, reflecting your role as a technical leader."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 95, comment: "Your salary provides a high degree of financial security and comfort." },
+                        { name: "Work-Life Balance (30%)", score: 65, comment: "You have more autonomy and ability to manage your workload." },
+                        { name: "Health & Security (20%)", score: 80, comment: "You have access to comprehensive benefits and low turnover risk." }
+                    ],
+                    summary: "Your well-being score is 70%, reflecting financial security and a stable work environment."
+                }
             },
         },
         {
@@ -435,6 +686,29 @@
                 salaryExplanation: "Your salary grows as you prove your effectiveness as a senior. Your ability to 'multiply' your team's output is a highly valuable, and compensable, skill.",
                 performanceExplanation: "At 86%, you are excelling in the senior role. You are not just leading but actively improving the team's overall technical health and capability.",
                 wellBeingExplanation: "Well-being continues to rise as you master the senior role. You are adept at balancing deep technical work with your leadership responsibilities.",
+                salaryBreakdown: {
+                    jobTitle: "Senior Engineer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Cloud Computing", "Architectural Patterns", "System Design"],
+                    certifications: ["AWS Certified Solutions Architect – Professional"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 86, comment: "Your growth within the senior role is impressive." },
+                        { name: "High Impact Skills (35%)", score: 90, comment: "Driving adoption of new technologies and fixing technical debt." },
+                        { name: "Leadership Keywords (20%)", score: 85, comment: "You are a force multiplier, unblocking and mentoring others." },
+                        { name: "Certifications (15%)", score: 80, comment: "New certification in AWS demonstrates deep expertise." }
+                    ],
+                    summary: "Your performance score is 86%, reflecting your role as a team multiplier."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 95, comment: "Your salary provides a high degree of financial security and comfort." },
+                        { name: "Work-Life Balance (30%)", score: 68, comment: "You are becoming more adept at balancing deep technical work with your leadership responsibilities." },
+                        { name: "Health & Security (20%)", score: 82, comment: "New certification in AWS and mastery of the role contribute to greater job security." }
+                    ],
+                    summary: "Your well-being score is 71%, reflecting your mastery of the senior role and growing comfort."
+                }
             },
         },
         {
@@ -457,7 +731,30 @@
                 ],
                 salaryExplanation: "Your compensation reflects your expanding influence. As you contribute to company-wide standards and platforms, your value increases significantly.",
                 performanceExplanation: "At 87%, your impact is organization-wide. Your performance is judged by your ability to create solutions that benefit multiple teams.",
-                wellBeingExplanation: "At 72%, your satisfaction comes from seeing your influence grow. You are shaping the company's technology, which provides a strong sense of purpose.",
+                wellBeingExplanation: "At 72%, you're finding a better rhythm. You are confident in your skills and are less stressed by ambiguity, leading to a healthier work-life balance.",
+                salaryBreakdown: {
+                    jobTitle: "Senior Engineer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Cloud Architecture", "Enterprise Systems", "Cross-team Collaboration"],
+                    certifications: ["AWS Certified Solutions Architect – Professional"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 87, comment: "Your impact is expanding beyond your immediate team." },
+                        { name: "High Impact Skills (35%)", score: 92, comment: "Designing and building shared platforms with enterprise systems knowledge." },
+                        { name: "Leadership Keywords (20%)", score: 88, comment: "Representing your team and contributing to company-wide strategy." },
+                        { name: "Certifications (15%)", score: 80, comment: "Your certification supports your cross-team architectural work." }
+                    ],
+                    summary: "Your performance score is 87%, reflecting your organization-wide impact and strategic thinking."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 95, comment: "Continued salary growth provides an even higher degree of financial comfort." },
+                        { name: "Work-Life Balance (30%)", score: 70, comment: "You are more confident in your skills and have greater control over your work." },
+                        { name: "Health & Security (20%)", score: 85, comment: "Your organization-wide impact provides exceptional job security." }
+                    ],
+                    summary: "Your well-being score is 72%, reflecting a stable and balanced rhythm in your career."
+                }
             },
         },
         {
@@ -481,6 +778,29 @@
                 salaryExplanation: "Your salary reflects your status as a top-tier technical expert. You are paid for your judgment and experience as much as for your code.",
                 performanceExplanation: "An 88% rating indicates you are a go-to expert. You are sought out for the toughest challenges, and your ability to solve them is your key performance metric.",
                 wellBeingExplanation: "At 73%, you have a high degree of autonomy and intellectual freedom, which are powerful drivers of job satisfaction and well-being.",
+                salaryBreakdown: {
+                    jobTitle: "Senior Engineer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Technical Leadership", "Problem Solving", "Strategic Planning"],
+                    certifications: ["Certified Kubernetes Administrator (CKA)"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 90, comment: "You are a go-to expert, consulted on the most challenging problems." },
+                        { name: "High Impact Skills (35%)", score: 90, comment: "Your judgment and ability to simplify complexity are highly valued." },
+                        { name: "Leadership Keywords (20%)", score: 90, comment: "Leading guilds and communities of practice." },
+                        { name: "Certifications (15%)", score: 85, comment: "A new certification in Kubernetes highlights your deep expertise." }
+                    ],
+                    summary: "Your performance score is 88%, reflecting your status as a trusted technical expert."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 96, comment: "Your high salary provides exceptional financial security." },
+                        { name: "Work-Life Balance (30%)", score: 72, comment: "You have a high degree of autonomy and control over your work." },
+                        { name: "Health & Security (20%)", score: 88, comment: "Your deep expertise and influence make your job highly secure." }
+                    ],
+                    summary: "Your well-being score is 73%, driven by intellectual freedom and high job satisfaction."
+                }
             },
         },
         {
@@ -504,6 +824,29 @@
                 salaryExplanation: "Your salary is now in the lead/staff engineer range, recognizing that your impact is far greater than that of a typical senior developer.",
                 performanceExplanation: "At 89%, you are performing at a 'principal-minus' level. You are tackling the most complex and valuable problems, setting you up for the next major career leap.",
                 wellBeingExplanation: "Your well-being is high at 74%. You are at the top of your game, respected for your expertise, and have the freedom to choose the problems you want to solve.",
+                salaryBreakdown: {
+                    jobTitle: "Senior Engineer / Staff Engineer",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "System Architecture", "Technical Vision", "Mentoring"],
+                    certifications: ["Certified Kubernetes Administrator (CKA)"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 92, comment: "Operating at a scope and impact that transcends the standard senior role." },
+                        { name: "High Impact Skills (35%)", score: 92, comment: "Tackling the most complex and valuable problems." },
+                        { name: "Leadership Keywords (20%)", score: 90, comment: "Mentoring other senior engineers and defining technical vision." },
+                        { name: "Certifications (15%)", score: 85, comment: "Your certifications support your high-level work." }
+                    ],
+                    summary: "Your performance score is 89%, reflecting your ability to tackle complex, high-impact problems."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 97, comment: "Your salary is now in the top tier, providing a high degree of financial freedom." },
+                        { name: "Work-Life Balance (30%)", score: 74, comment: "You have the freedom to choose problems and mentor others, enhancing job satisfaction." },
+                        { name: "Health & Security (20%)", score: 90, comment: "Your high-level impact and expertise make your job exceptionally secure." }
+                    ],
+                    summary: "Your well-being score is 74%, reflecting the respect and freedom you have earned."
+                }
             },
         },
         {
@@ -527,6 +870,29 @@
                 salaryExplanation: "At this point in your career, your salary reflects a transition into leadership and architectural responsibilities. Your technical decision-making impacts multiple teams, and your growing ability to connect business goals with engineering outcomes elevates your compensation to match lead and architect-level expectations in the Philippine market. Years of skill refinement, strategic thinking, and system-level ownership have made your contributions highly valuable.",
                 performanceExplanation: "Your performance score captures your consistent delivery of business-critical solutions and increasing influence over engineering direction. Having mentored others, led initiatives, and handled projects with organizational impact, you’ve met all key performance metrics: time to career progression, ownership of high-impact systems, and sustained professional growth.",
                 wellBeingExplanation: "Well-being further improves due to continued salary growth and enhanced benefits, including potential remote work options and comprehensive health coverage. Despite higher managerial duties and strategic responsibilities—which can reduce work-life balance—the financial security and professional autonomy gained at this stage typically offset stress. The lower turnover rates in senior technical and leadership roles promote sustained job satisfaction.",
+                salaryBreakdown: {
+                    jobTitle: "Lead Engineer / Architect",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "System Architecture", "Leadership", "Business Strategy"],
+                    certifications: ["Certified Kubernetes Administrator (CKA)", "Google Professional Cloud Architect"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 93, comment: "You have achieved a lead or architect role, a major career milestone." },
+                        { name: "High Impact Skills (35%)", score: 93, comment: "Making high-impact decisions and aligning tech solutions with business goals." },
+                        { name: "Leadership Keywords (20%)", score: 90, comment: "Influencing the company's technology roadmap and shaping engineering culture." },
+                        { name: "Certifications (15%)", score: 90, comment: "New certifications in cloud architecture demonstrate your expertise." }
+                    ],
+                    summary: "Your performance score is 90%, reflecting your role as a key technical authority and your strategic influence."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 98, comment: "Your salary provides exceptional financial security and freedom." },
+                        { name: "Work-Life Balance (30%)", score: 75, comment: "You have more autonomy and ability to manage your workload with flexible work options." },
+                        { name: "Health & Security (20%)", score: 92, comment: "You have comprehensive benefits and are a highly valuable asset, making your job very secure." }
+                    ],
+                    summary: "Your well-being score is 75%, reflecting a strong balance of financial security and professional autonomy."
+                }
             },
         },
         {
@@ -550,6 +916,29 @@
                 salaryExplanation: "Your salary reflects your responsibility over critical systems. An architect's pay is tied to the immense value and risk associated with their decisions.",
                 performanceExplanation: "At 91%, you excel at strategic work. Your ability to plan and execute large-scale projects like technology migrations is a key performance indicator.",
                 wellBeingExplanation: "Well-being at 76% is maintained by a focus on high-level, intellectually stimulating work, though the pressure of your responsibilities is significant.",
+                salaryBreakdown: {
+                    jobTitle: "Lead Engineer / Architect",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Distributed Systems", "Technology Migration", "Mentorship"],
+                    certifications: ["Google Professional Cloud Architect"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 93, comment: "Your growth continues as you take on more strategic work." },
+                        { name: "High Impact Skills (35%)", score: 95, comment: "Your expertise in large-scale systems and migrations is highly valued." },
+                        { name: "Leadership Keywords (20%)", score: 92, comment: "You are standardizing engineering practices and speaking at conferences." },
+                        { name: "Certifications (15%)", score: 85, comment: "Your certification supports your strategic and architectural work." }
+                    ],
+                    summary: "Your performance score is 91%, reflecting your ability to manage and maintain critical, large-scale systems."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 99, comment: "Your salary provides a high degree of financial freedom and comfort." },
+                        { name: "Work-Life Balance (30%)", score: 76, comment: "The high-level, intellectually stimulating work enhances job satisfaction." },
+                        { name: "Health & Security (20%)", score: 93, comment: "Your responsibility for critical systems makes your job exceptionally secure." }
+                    ],
+                    summary: "Your well-being score is 76%, reflecting high job satisfaction and security."
+                }
             },
         },
         {
@@ -573,6 +962,29 @@
                 salaryExplanation: "Your compensation is for foresight. You are being paid to think years ahead and position the company for future success, a rare and valuable skill.",
                 performanceExplanation: "Performance remains at 91% as your work is now long-term. Success is harder to measure quarterly but is seen in the company's sustained technical excellence.",
                 wellBeingExplanation: "Well-being at 77% comes from engaging in deep, strategic work. While the feedback loop is long, the nature of the work is highly fulfilling.",
+                salaryBreakdown: {
+                    jobTitle: "Lead Engineer / Architect",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Technology Strategy", "Long-term Planning", "Stakeholder Management"],
+                    certifications: ["Google Professional Cloud Architect"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 93, comment: "You are a highly strategic contributor." },
+                        { name: "High Impact Skills (35%)", score: 93, comment: "Identifying future technical challenges and advising senior leadership." },
+                        { name: "Leadership Keywords (20%)", score: 92, comment: "Leading long-term planning and building alignment for your vision." },
+                        { name: "Certifications (15%)", score: 85, comment: "Your certification supports your role as a technical strategist." }
+                    ],
+                    summary: "Your performance score is 91%, reflecting your focus on long-term strategy and foresight."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 99, comment: "Your salary provides a high degree of financial freedom and comfort." },
+                        { name: "Work-Life Balance (30%)", score: 78, comment: "The long-term, strategic nature of your work is highly fulfilling." },
+                        { name: "Health & Security (20%)", score: 94, comment: "Your strategic role makes you indispensable, enhancing job security." }
+                    ],
+                    summary: "Your well-being score is 77%, reflecting the fulfillment of deep, strategic work."
+                }
             },
         },
         {
@@ -596,6 +1008,29 @@
                 salaryExplanation: "At ₱180k, you are in the top percentile of technical contributors. Your salary reflects your status as a thought leader in your field.",
                 performanceExplanation: "A bump to 92% signifies your external impact. Your performance is now also measured by your influence on the wider tech community.",
                 wellBeingExplanation: "Well-being at 78% is driven by the satisfaction of thought leadership. You are not just building things but are shaping the industry and sharing your knowledge.",
+                salaryBreakdown: {
+                    jobTitle: "Principal Engineer / Architect",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Business Acumen", "Industry Leadership", "Technical Foresight"],
+                    certifications: ["Google Professional Cloud Architect", "TOGAF 9 Certification"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 94, comment: "You are at the pinnacle of your career, a highly respected thought leader." },
+                        { name: "High Impact Skills (35%)", score: 95, comment: "Your expertise is sought after, and you have deep business and tech acumen." },
+                        { name: "Leadership Keywords (20%)", score: 92, comment: "You are influencing industry standards and writing books or courses." },
+                        { name: "Certifications (15%)", score: 88, comment: "Your new certification supports your high-level architectural work." }
+                    ],
+                    summary: "Your performance score is 92%, reflecting your status as a thought leader and your external impact."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 99, comment: "Your high salary provides exceptional financial comfort and freedom." },
+                        { name: "Work-Life Balance (30%)", score: 80, comment: "The satisfaction of thought leadership drives your well-being." },
+                        { name: "Health & Security (20%)", score: 95, comment: "Your industry influence provides a very high degree of job security." }
+                    ],
+                    summary: "Your well-being score is 78%, driven by the satisfaction of shaping the industry and sharing your knowledge."
+                }
             },
         },
         {
@@ -619,6 +1054,29 @@
                 salaryExplanation: "Nearing ₱200k, your salary is commensurate with a director-level role. You are compensated for taking on the highest level of technical accountability.",
                 performanceExplanation: "Performance at 92% is about leverage. Your primary function is to make other teams and engineers more successful through your architectural guidance and vision.",
                 wellBeingExplanation: "Well-being at 79% is high. It comes from the deep satisfaction of seeing your vision executed by empowered teams and having a lasting impact on the business.",
+                salaryBreakdown: {
+                    jobTitle: "Principal Engineer / Architect",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Product Vision", "Cross-functional Leadership", "Mentoring"],
+                    certifications: ["TOGAF 9 Certification"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 94, comment: "Your influence is equivalent to a director, leading major problems." },
+                        { name: "High Impact Skills (35%)", score: 95, comment: "Defining next-gen product architecture with your technical vision." },
+                        { name: "Leadership Keywords (20%)", score: 92, comment: "Leading cross-functional teams and acting as a tech ambassador." },
+                        { name: "Certifications (15%)", score: 88, comment: "Your certifications support your high-level work." }
+                    ],
+                    summary: "Your performance score is 92%, reflecting your leverage and ability to make others more successful."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 99, comment: "Your salary provides exceptional financial security, freedom, and comfort." },
+                        { name: "Work-Life Balance (30%)", score: 82, comment: "Your ability to empower teams and have a lasting impact is highly fulfilling." },
+                        { name: "Health & Security (20%)", score: 96, comment: "Your role is at the pinnacle of the technical career path, providing the highest level of job security." }
+                    ],
+                    summary: "Your well-being score is 79%, reflecting the deep satisfaction of having a lasting impact on the business."
+                }
             },
         },
         {
@@ -642,6 +1100,29 @@
                 salaryExplanation: "With two decades of experience, your salary reaches executive-equivalent levels. This reflects a rare blend of deep technical expertise, architectural foresight, and the strategic leadership needed to future-proof an organization. Your long-term mastery of tools like JavaScript and Git is now complemented by system design, governance, and innovation leadership—skills that command premium compensation in the current market.",
                 performanceExplanation: "A 93% performance rating recognizes your impact at the highest level of the technical career path. Your ability to define long-term technology vision, scale engineering practices, and mentor future leaders places you in the top percentile of performers. Your role is no longer just about execution—it’s about enabling business success through technical excellence.",
                 wellBeingExplanation: "At the peak of your career, your well-being reflects high financial comfort and strong benefits packages, including health and retirement plans. Although your role involves significant responsibility and long-term planning, your established influence and flexibility often allow for better work-life harmony. The combination of industry respect, lower turnover risk, and accumulated career success culminates in the highest well-being scores.",
+                salaryBreakdown: {
+                    jobTitle: "Principal Engineer / Director",
+                    location: "Quezon City, Philippines",
+                    skills: ["JavaScript", "React", "Executive Leadership", "Technology Governance", "Innovation"],
+                    certifications: ["TOGAF 9 Certification"]
+                },
+                performanceBreakdown: {
+                    metrics: [
+                        { name: "Promotion Velocity (30%)", score: 95, comment: "You are at the peak of the technical career path." },
+                        { name: "High Impact Skills (35%)", score: 95, comment: "Focusing on future-proofing technology and driving innovation." },
+                        { name: "Leadership Keywords (20%)", score: 94, comment: "Building a legacy and succession plan." },
+                        { name: "Certifications (15%)", score: 90, comment: "Your certifications support your role as an industry leader." }
+                    ],
+                    summary: "Your performance score is 93%, reflecting your strategic, long-term impact on the company. You are at the pinnacle of your career, focused on future-proofing the business through your leadership and vision."
+                },
+                wellBeingBreakdown: {
+                    metrics: [
+                        { name: "Financial Well-being (50%)", score: 100, comment: "At ₱200,000, your salary provides the highest level of financial security and comfort." },
+                        { name: "Work-Life Balance (30%)", score: 85, comment: "Your established influence and flexibility allow for better work-life harmony." },
+                        { name: "Health & Security (20%)", score: 98, comment: "Your executive-equivalent role and industry respect provide the ultimate job security." }
+                    ],
+                    summary: "Your well-being score is 80%, reflecting the pinnacle of financial comfort, career satisfaction, and work-life harmony."
+                }
             },
         }
     ];
@@ -663,6 +1144,21 @@
     const modalTitle = document.getElementById('modal-title');
     const modalExplanation = document.getElementById('modal-explanation');
     const modalCloseBtn = document.getElementById('modal-close-btn');
+    const breakdownJobTitle = document.getElementById('breakdown-job-title');
+    const breakdownLocation = document.getElementById('breakdown-location');
+    const breakdownSkillsList = document.getElementById('breakdown-skills-list');
+    const breakdownCertsList = document.getElementById('breakdown-certs-list');
+    const modalSalaryBreakdown = document.getElementById('modal-salary-breakdown');
+
+    // NEW DOM elements for performance breakdown
+    const modalPerformanceBreakdown = document.getElementById('modal-performance-breakdown');
+    const breakdownSummary = document.getElementById('breakdown-summary');
+    const breakdownMetricsList = document.getElementById('breakdown-metrics-list');
+
+    // NEW DOM elements for well-being breakdown
+    const modalWellBeingBreakdown = document.getElementById('modal-wellBeing-breakdown');
+    const wellbeingBreakdownSummary = document.getElementById('wellbeing-breakdown-summary');
+    const wellbeingBreakdownMetricsList = document.getElementById('wellbeing-breakdown-metrics-list');
 
     let currentYear = 1;
 
@@ -723,18 +1219,44 @@
         let title = '';
         let explanation = '';
 
+        // Hide all breakdown sections by default
+        modalSalaryBreakdown.classList.add('hidden');
+        modalPerformanceBreakdown.classList.add('hidden');
+        modalWellBeingBreakdown.classList.add('hidden');
+
         switch (metricType) {
             case 'salary':
                 title = `Salary Explanation (Year ${currentYear})`;
                 explanation = data.details.salaryExplanation;
+                modalSalaryBreakdown.classList.remove('hidden');
+                breakdownJobTitle.textContent = data.details.salaryBreakdown.jobTitle;
+                breakdownLocation.textContent = data.details.salaryBreakdown.location;
+                breakdownSkillsList.innerHTML = data.details.salaryBreakdown.skills
+                    .map(item => `<li>${item}</li>`).join('');
+                breakdownCertsList.innerHTML = data.details.salaryBreakdown.certifications
+                    .map(item => `<li>${item}</li>`).join('');
                 break;
             case 'performance':
                 title = `Performance Explanation (Year ${currentYear})`;
                 explanation = data.details.performanceExplanation;
+                if (data.details.performanceBreakdown) {
+                    modalPerformanceBreakdown.classList.remove('hidden');
+                    const breakdown = data.details.performanceBreakdown;
+                    breakdownSummary.textContent = breakdown.summary;
+                    breakdownMetricsList.innerHTML = breakdown.metrics
+                        .map(item => `<li>${item.name}: ${item.score}% - ${item.comment}</li>`).join('');
+                }
                 break;
             case 'wellBeing':
                 title = `Well-being Explanation (Year ${currentYear})`;
                 explanation = data.details.wellBeingExplanation;
+                if (data.details.wellBeingBreakdown) {
+                    modalWellBeingBreakdown.classList.remove('hidden');
+                    const breakdown = data.details.wellBeingBreakdown;
+                    wellbeingBreakdownSummary.textContent = breakdown.summary;
+                    wellbeingBreakdownMetricsList.innerHTML = breakdown.metrics
+                        .map(item => `<li>${item.name}: ${item.score}% - ${item.comment}</li>`).join('');
+                }
                 break;
         }
 

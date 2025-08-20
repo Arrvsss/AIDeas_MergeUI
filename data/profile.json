@@ -1,12 +1,12 @@
 {
-  "fullName": "",
-  "email": "",
-  "contactNumber": "",
-  "address": "",
-  "school": "",
-  "course": "",
-  "skills": "",
-  "certifications": "",
-  "interests": "",
-  "careerGoals": ""
+  "fullName": "Abbe Gerald N. Rivero",
+  "email": "abrivero@my.cspc.edu.ph",
+  "contactNumber": "09615974857",
+  "address": "Lagonoy, Camarines Sur",
+  "school": "Camarines Sur Polytechnic Colleges",
+  "course": "BS in electronics Engineering",
+  "skills": "Javascript, React, HTML, CSS, Git",
+  "certifications": "Aws cloud practitioner",
+  "interests": "video gaming",
+  "careerGoals": "be a software engineer in 5 years"
 }
